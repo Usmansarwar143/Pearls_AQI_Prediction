@@ -1,0 +1,21 @@
+# Data & Backend
+pandas
+numpy
+requests
+python-dotenv
+fastapi
+uvicorn
+
+# Machine Learning
+scikit-learn
+shap
+lime
+
+# Feature Store & Model Registry
+hopsworks
+# Frontend
+streamlit
+
+# Development
+jupyter
+pytest
