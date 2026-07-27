@@ -12,7 +12,7 @@ shap
 lime
 
 # Feature Store & Model Registry
-hopsworks
+hopsworks[python]
 # Frontend
 streamlit
 
