@@ -31,10 +31,11 @@ def run_daily_update(days_back=3):
     print("Fetching Feature Group 'aqi_features'...")
     aqi_fg = fs.get_or_create_feature_group(
         name="aqi_features",
-        version=1,
+        version=2,
         primary_key=["date"],
         description="Hourly Air Quality Index dataset with weather features",
-        online_enabled=False
+        online_enabled=False,
+        time_travel_format="HUDI"
     )
     
     # Insert data (Hopsworks handles duplicates via primary key automatically)

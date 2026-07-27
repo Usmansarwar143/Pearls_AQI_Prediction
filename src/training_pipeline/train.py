@@ -22,7 +22,7 @@ def train_and_evaluate():
     
     print("Fetching Feature Group 'aqi_features'...")
     try:
-        fg = fs.get_feature_group(name="aqi_features", version=1)
+        fg = fs.get_feature_group(name="aqi_features", version=2)
         df = fg.read()
     except Exception as e:
         print("Error fetching data from Hopsworks:", e)

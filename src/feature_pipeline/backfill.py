@@ -31,10 +31,11 @@ def backfill_historical_data(days_back=365):
     print("Creating/Getting Feature Group 'aqi_features'...")
     aqi_fg = fs.get_or_create_feature_group(
         name="aqi_features",
-        version=1,
+        version=2,
         primary_key=["date"],
         description="Hourly Air Quality Index dataset with weather features",
-        online_enabled=False
+        online_enabled=False,
+        time_travel_format="HUDI"
     )
     
     # Insert data
