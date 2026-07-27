@@ -14,8 +14,6 @@ lime
 # Feature Store & Model Registry
 hopsworks[python]
 # Frontend
-streamlit
-
 # Development
 jupyter
 pytest

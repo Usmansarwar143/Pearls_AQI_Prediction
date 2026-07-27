@@ -24,12 +24,12 @@
 
 ### 2. Next Steps
 - Transition to **Phase 5 (Web Application UI)**.
-- Start developing the interactive Streamlit user interface (`frontend_app.py`) using dynamic, aesthetic visuals.
+- Start developing the FastAPI backend (`backend_api.py`) and the HTML/CSS/JS frontend.
 - Build components to display historical AQI trends and future predictions pulled from Hopsworks models.
 
 ## ⏳ Remaining Tasks
 - [x] Phase 4: Setup GitHub Actions / Airflow for CI/CD automation.
-- [ ] Phase 5: Develop the FastAPI backend and Streamlit/Gradio frontend.
+- [ ] Phase 5: Develop the FastAPI backend and HTML/CSS/JS frontend.
 - [ ] Phase 6: Final testing, UI polishing, and reporting.
 
 ## 📁 Active Files

@@ -16,7 +16,7 @@
 - **Machine Learning Pipeline:** Train and evaluate multiple ML models (Scikit-learn models like Random Forest, Ridge Regression, and advanced models using TensorFlow/PyTorch).
 - **Explainable AI (XAI):** Integration of SHAP or LIME to provide feature importance explanations to users.
 - **Automated CI/CD:** Scheduled pipelines (e.g., hourly feature generation, daily model training).
-- **Interactive Dashboard:** A web application (Streamlit/Gradio & Flask/FastAPI) to visualize real-time and forecasted AQI data, including alerts for hazardous AQI levels.
+- **Interactive Dashboard:** A web application (HTML/JS frontend + FastAPI backend) to visualize real-time and forecasted AQI data, including alerts for hazardous AQI levels.
 
 ## 4. System Requirements
 - The system must be 100% serverless (e.g., utilizing Hopsworks or Vertex AI for feature stores/model registries, and GitHub Actions for CI/CD).

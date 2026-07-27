@@ -20,8 +20,8 @@ The system is divided into three distinct operational pipelines that act upon a 
 - **Machine Learning:** Scikit-Learn (Random Forest, Ridge Regression), TensorFlow, PyTorch.
 - **MLOps (Feature Store & Model Registry):** Hopsworks or Vertex AI (Free Tiers).
 - **Automation / CI-CD:** GitHub Actions or Apache Airflow.
-- **Backend API:** FastAPI or Flask.
-- **Frontend App:** Streamlit or Gradio.
+- **Backend API:** FastAPI.
+- **Frontend App:** HTML, CSS (Vanilla), and JavaScript.
 - **Explainable AI:** SHAP or LIME.
 - **Data Handling:** Pandas, NumPy.
 
@@ -40,8 +40,10 @@ Pearls_AQI_Prediction/
 │   │   ├── train.py
 │   │   └── evaluate.py
 │   └── web_app/                # Dashboard and API code
-│       ├── backend_api.py      # FastAPI/Flask server
-│       └── frontend_app.py     # Streamlit/Gradio dashboard
+│       ├── api.py              # FastAPI server
+│       ├── index.html          # Frontend HTML
+│       ├── style.css           # Vanilla CSS
+│       └── script.js           # Frontend Logic
 ├── Documentation/              # Project Documentation (PRD, Architecture, etc.)
 ├── requirements.txt            # Python dependencies
 └── .env.example                # Example environment variables (API keys)

@@ -27,9 +27,9 @@
 - Ensure logs and errors are properly tracked.
 
 ## Phase 5: Web Application
-- Build a lightweight backend API (FastAPI/Flask) or directly connect the frontend if using Streamlit.
-- Develop the frontend dashboard (Streamlit/Gradio).
-- Connect the dashboard to the Feature Store (latest features) and Model Registry (inference model).
+- Build a backend API using **FastAPI** to serve models and features.
+- Develop the frontend dashboard using **raw HTML, CSS (Vanilla), and JavaScript**.
+- Connect the frontend to the FastAPI backend via AJAX/Fetch API to retrieve the latest features and predictions.
 - Design simple, descriptive widgets to show predictions and hazardous AQI alerts.
 
 ## Phase 6: Final Review & Delivery

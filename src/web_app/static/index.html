@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearls AQI Predictor</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <h1>Pearls AQI Predictor</h1>
+                <p>100% Serverless Air Quality Forecasting powered by Hopsworks & Machine Learning.</p>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <span class="icon">🌙</span>
+            </div>
+        </header>
+
+        <!-- Loader -->
+        <div id="loader" class="loader-container">
+            <div class="spinner"></div>
+            <p>Fetching latest models and features from Hopsworks...</p>
+        </div>
+
+        <!-- Dashboard Content (Hidden until loaded) -->
+        <main id="dashboard" class="hidden">
+            
+            <!-- Current Status -->
+            <section class="current-status-section">
+                <div class="status-card glass" id="currentAqiCard">
+                    <h3>Current AQI <span class="date-label" id="currentDateLabel"></span></h3>
+                    <div class="aqi-display">
+                        <span class="aqi-value" id="currentAqiValue">--</span>
+                        <span class="aqi-category" id="currentAqiCategory">Loading...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Predictions Grid -->
+            <section class="predictions-section">
+                <h2>AI Forecasts</h2>
+                <div class="grid">
+                    
+                    <!-- Day 1 Card -->
+                    <div class="forecast-card glass" id="day1Card">
+                        <h4>Tomorrow</h4>
+                        <div class="forecast-value" id="day1Value">--</div>
+                        <div class="forecast-category" id="day1Category">--</div>
+                    </div>
+
+                    <!-- Day 2 Card -->
+                    <div class="forecast-card glass" id="day2Card">
+                        <h4>In 2 Days</h4>
+                        <div class="forecast-value" id="day2Value">--</div>
+                        <div class="forecast-category" id="day2Category">--</div>
+                    </div>
+
+                    <!-- Day 3 Card -->
+                    <div class="forecast-card glass" id="day3Card">
+                        <h4>In 3 Days</h4>
+                        <div class="forecast-value" id="day3Value">--</div>
+                        <div class="forecast-category" id="day3Category">--</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section class="chart-section glass">
+                <h2>Historical AQI Trend (Last 7 Days)</h2>
+                <div class="chart-wrapper">
+                    <canvas id="aqiChart"></canvas>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="/script.js"></script>
+</body>
+</html>
