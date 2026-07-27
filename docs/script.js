@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch Data from API
     async function fetchData() {
         try {
-            const response = await fetch('/api/predict');
+            const response = await fetch('predictions.json');
             const result = await response.json();
             
             if (result.status === 'success') {

@@ -36,3 +36,17 @@ jobs:
           
           # Run script
           python src/feature_pipeline/daily_update.py
+
+      - name: Generate static predictions
+        env:
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+          HOPSWORKS_PROJECT_NAME: ${{ secrets.HOPSWORKS_PROJECT_NAME }}
+        run: |
+          python src/web_app/generate_predictions.py
+
+      - name: Commit predictions.json
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/predictions.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: Update daily predictions" && git push)

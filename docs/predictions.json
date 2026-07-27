@@ -1,0 +1,8 @@
+{
+    "status": "success",
+    "data": {
+        "current_aqi": 4.0,
+        "current_date": "2026-07-27T14:00:00.000000",
+        "history": [
+            {
+                "date": 
