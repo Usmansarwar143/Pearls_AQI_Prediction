@@ -133,8 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         label: 'Historical AQI',
                         data: histDataPadded,
-                        borderColor: '#4A90E2',
-                        backgroundColor: 'rgba(74, 144, 226, 0.2)',
+                        borderColor: '#98C1D9',
+                        backgroundColor: 'rgba(152, 193, 217, 0.2)',
                         borderWidth: 3,
                         pointRadius: 4,
                         fill: true,
@@ -143,11 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         label: 'Predicted AQI',
                         data: predDataPadded,
-                        borderColor: '#F5A623',
+                        borderColor: '#3D5A80',
                         borderDash: [5, 5], // dashed line for future
                         borderWidth: 3,
                         pointRadius: 5,
-                        pointBackgroundColor: '#F5A623',
+                        pointBackgroundColor: '#3D5A80',
                         fill: false,
                         tension: 0.3
                     }

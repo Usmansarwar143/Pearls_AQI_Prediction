@@ -1,10 +1,10 @@
 :root {
     /* Color Palette */
-    --primary-color: #4A90E2;
-    --bg-light: #F8F9FA;
-    --bg-dark: #121212;
-    --card-bg-light: rgba(255, 255, 255, 0.7);
-    --card-bg-dark: rgba(30, 30, 30, 0.7);
+    --primary-color: #3D5A80;
+    --bg-light: #E0FBFC;
+    --bg-dark: #293241;
+    --card-bg-light: rgba(152, 193, 217, 0.5); /* 98C1D9 */
+    --card-bg-dark: rgba(61, 90, 128, 0.5); /* 3D5A80 */
     
     /* AQI Colors */
     --aqi-good: #50E3C2;
