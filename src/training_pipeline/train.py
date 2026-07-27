@@ -23,7 +23,8 @@ def train_and_evaluate():
     print("Fetching Feature Group 'aqi_features'...")
     try:
         fg = fs.get_feature_group(name="aqi_features", version=2)
-        df = fg.read()
+        query = fg.select_all()
+        df = query.read(read_options={"use_hive": True})
     except Exception as e:
         print("Error fetching data from Hopsworks:", e)
         return
