@@ -26,6 +26,7 @@ def generate_predictions():
     latest_row = df.iloc[0:1]
     
     recent_history = df.head(7)[['date', 'aqi']].sort_values(by="date", ascending=True)
+    recent_history['date'] = recent_history['date'].astype(str)
     history_data = recent_history.to_dict(orient="records")
     
     # 2. Download Models
@@ -77,7 +78,7 @@ def generate_predictions():
     out_path = os.path.join(docs_dir, 'predictions.json')
     
     with open(out_path, 'w') as f:
-        json.dump(preds, f, indent=4)
+        json.dump(preds, f, indent=4, default=str)
         
     print(f"Successfully saved predictions to {out_path}")
 
