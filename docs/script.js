@@ -1,29 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Theme Toggling
-    const themeToggle = document.getElementById('themeToggle');
-    const root = document.documentElement;
-    let isDark = true; // default dark
-
-    themeToggle.addEventListener('click', () => {
-        isDark = !isDark;
-        if (isDark) {
-            root.removeAttribute('data-theme');
-            themeToggle.innerHTML = '<span class="icon">🌙</span>';
-        } else {
-            root.setAttribute('data-theme', 'light');
-            themeToggle.innerHTML = '<span class="icon">☀️</span>';
-        }
-        
-        // Update chart colors if chart exists
-        if (window.aqiChartInstance) {
-            window.aqiChartInstance.options.scales.x.ticks.color = isDark ? '#E0E0E0' : '#333333';
-            window.aqiChartInstance.options.scales.y.ticks.color = isDark ? '#E0E0E0' : '#333333';
-            window.aqiChartInstance.options.plugins.legend.labels.color = isDark ? '#E0E0E0' : '#333333';
-            window.aqiChartInstance.update();
-        }
-    });
-
     // Helper: Determine AQI Category and CSS Class
     function getAqiDetails(aqi) {
         if (aqi <= 50) return { label: 'Good', className: 'bg-good' };
@@ -42,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch Data from API
     async function fetchData() {
         try {
-            const response = await fetch('predictions.json');
+            const response = await fetch('/api/predictions');
             const result = await response.json();
             
             if (result.status === 'success') {
@@ -159,22 +135,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 plugins: {
                     legend: {
                         labels: {
-                            color: isDark ? '#E0E0E0' : '#333333',
-                            font: { family: 'Inter', size: 14 }
+                            color: '#333333',
+                            font: { family: 'Poppins', size: 14 }
                         }
                     },
                     tooltip: {
                         mode: 'index',
                         intersect: false,
-                        titleFont: { family: 'Inter', size: 14 },
+                        titleFont: { family: 'Poppins', size: 14 },
                         bodyFont: { family: 'Fira Code', size: 13 }
                     }
                 },
                 scales: {
                     x: {
                         ticks: {
-                            color: isDark ? '#E0E0E0' : '#333333',
-                            font: { family: 'Inter' }
+                            color: '#333333',
+                            font: { family: 'Poppins' }
                         },
                         grid: {
                             color: 'rgba(128, 128, 128, 0.2)'
@@ -183,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            color: isDark ? '#E0E0E0' : '#333333',
+                            color: '#333333',
                             font: { family: 'Fira Code' }
                         },
                         grid: {

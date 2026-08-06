@@ -3,44 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pearls AQI Predictor</title>
+    <title>Pearls AQI Predictor - Sadiqabad Air Quality Forecast</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
     
-    <!-- Chart.js -->
+    <!-- Chart.js & Mermaid.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/style.css">
+    <!-- Custom CSS (Cache Busted v4) -->
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
+    <!-- Navigation Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-wrapper">
+                <img src="logo.png" alt="Pearls AQI Logo" class="header-logo">
+                <div class="brand-text">
+                    <h1>Pearls AQI Predictor</h1>
+                    <span class="tagline">Sadiqabad Air Quality Intelligence</span>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="status-dot"></span> 📍 Sadiqabad, Pakistan
+            </div>
+        </div>
+    </header>
+
     <div class="app-container">
-        <!-- Header -->
-        <header>
-            <div class="header-content">
-                <h1>Pearls AQI Predictor</h1>
-                <p>100% Serverless Air Quality Forecasting powered by Hopsworks & Machine Learning.</p>
-            </div>
-            <div class="theme-toggle" id="themeToggle">
-                <span class="icon">🌙</span>
-            </div>
-        </header>
 
         <!-- Loader -->
         <div id="loader" class="loader-container">
             <div class="spinner"></div>
-            <p>Fetching latest models and features from Hopsworks...</p>
+            <p>Fetching real-time Sadiqabad predictions from Hopsworks...</p>
         </div>
 
-        <!-- Dashboard Content (Hidden until loaded) -->
+        <!-- Dashboard Content (Predictions AT THE TOP!) -->
         <main id="dashboard" class="hidden">
             
-            <!-- Current Status -->
+            <!-- Current Status Section -->
             <section class="current-status-section">
-                <div class="status-card glass" id="currentAqiCard">
-                    <h3>Current AQI <span class="date-label" id="currentDateLabel"></span></h3>
+                <div class="status-card" id="currentAqiCard">
+                    <div class="status-header">
+                        <h3>📍 Sadiqabad Live AQI Reading</h3>
+                        <span class="date-label" id="currentDateLabel">--</span>
+                    </div>
                     <div class="aqi-display">
                         <span class="aqi-value" id="currentAqiValue">--</span>
                         <span class="aqi-category" id="currentAqiCategory">Loading...</span>
@@ -50,45 +60,110 @@
 
             <!-- Predictions Grid -->
             <section class="predictions-section">
-                <h2>AI Forecasts</h2>
+                <div class="section-title">
+                    <h2>Sadiqabad 3-Day AI Forecast</h2>
+                    <p>Advanced machine-learning generated atmospheric predictions tailored specifically for the city of Sadiqabad.</p>
+                </div>
                 <div class="grid">
-                    
                     <!-- Day 1 Card -->
-                    <div class="forecast-card glass" id="day1Card">
-                        <h4>Tomorrow</h4>
+                    <div class="forecast-card" id="day1Card">
+                        <h4>Tomorrow in Sadiqabad</h4>
                         <div class="forecast-value" id="day1Value">--</div>
                         <div class="forecast-category" id="day1Category">--</div>
                     </div>
 
                     <!-- Day 2 Card -->
-                    <div class="forecast-card glass" id="day2Card">
-                        <h4>In 2 Days</h4>
+                    <div class="forecast-card" id="day2Card">
+                        <h4>2-Day Outlook</h4>
                         <div class="forecast-value" id="day2Value">--</div>
                         <div class="forecast-category" id="day2Category">--</div>
                     </div>
 
                     <!-- Day 3 Card -->
-                    <div class="forecast-card glass" id="day3Card">
-                        <h4>In 3 Days</h4>
+                    <div class="forecast-card" id="day3Card">
+                        <h4>3-Day Outlook</h4>
                         <div class="forecast-value" id="day3Value">--</div>
                         <div class="forecast-category" id="day3Category">--</div>
                     </div>
-
                 </div>
             </section>
 
             <!-- Chart Section -->
-            <section class="chart-section glass">
-                <h2>Historical AQI Trend (Last 7 Days)</h2>
+            <section class="chart-section">
+                <div class="section-title">
+                    <h2>Sadiqabad Historical AQI Trend</h2>
+                    <p>Empirical air quality visualization over the trailing 7-day monitoring window.</p>
+                </div>
                 <div class="chart-wrapper">
                     <canvas id="aqiChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Explanatory Overview Section (BELOW PREDICTIONS) -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <span class="hero-subheading">Why & How We Forecast Sadiqabad's Air Quality</span>
+                    <h2>Enterprise-Grade Serverless Intelligence</h2>
+                    <p class="hero-description">
+                        The Pearls AQI Predictor is dedicated to providing high-accuracy environmental intelligence for <strong>Sadiqabad</strong>. Powered by a fully autonomous, serverless machine learning architecture, our system continuously assimilates regional meteorological and pollutant metrics, computes dynamic features in the Hopsworks Feature Store, and publishes dependable forecasts to protect community health.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Project Technical Details -->
+            <section class="architecture-section">
+                <div class="section-title">
+                    <h2>System Architecture & Automations</h2>
+                    <p>Under the hood of our automated CI/CD feature pipelines and machine learning registries for Sadiqabad.</p>
+                </div>
+                <div class="architecture-grid">
+                    <div class="arch-box">
+                        <h4>⚙️ Automated Data Pipeline</h4>
+                        <p>An autonomous GitHub Actions workflow triggers hourly, fetching raw environmental data from external weather & pollution APIs, generating advanced temporal features, and pushing structured datasets directly to the Hopsworks Feature Store.</p>
+                        <div class="mermaid">
+                        graph TD
+                            A(Sadiqabad Weather API) --> B[Feature Generator Script]
+                            B --> C[(Hopsworks Feature Store)]
+                        </div>
+                    </div>
+                    <div class="arch-box">
+                        <h4>🧠 ML Training & Registry</h4>
+                        <p>A daily automated continuous training (CT) pipeline extracts historical feature targets from Hopsworks, optimizes regression estimators, rigorously benchmarks performance against validation splits, and saves verified champions to the Model Registry.</p>
+                        <div class="mermaid">
+                        graph TD
+                            A[(Feature Store)] --> B[Model Training Engine]
+                            B --> C[(Model Registry)]
+                        </div>
+                    </div>
+                    <div class="arch-box">
+                        <h4>📊 Serverless Inference API</h4>
+                        <p>This dynamic frontend dashboard interfaces cleanly with our fast FastAPI serving infrastructure to query model artifacts and live feature aggregations in sub-second execution times—delivering seamless analytical insights without managing persistent compute instances.</p>
+                        <div class="mermaid">
+                        graph TD
+                            A[(Registry & Store)] --> B[FastAPI Server]
+                            B --> C(Interactive Dashboard)
+                        </div>
+                    </div>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- Custom JS -->
-    <script src="/script.js"></script>
+    <!-- Proper Professional Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-branding">
+                <p class="author-credit">Engineered by <strong class="author-name">Usman Sarwar</strong></p>
+                <p class="author-title">Machine Learning & Data Engineer</p>
+            </div>
+            <div class="footer-legal">
+                <p class="copyright">© 2026 Pearls AQI Predictor Project. Built for Sadiqabad with professional serverless architecture.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS (Cache Busted v4) -->
+    <script src="script.js?v=4"></script>
 </body>
 </html>

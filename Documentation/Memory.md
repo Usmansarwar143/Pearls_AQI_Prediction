@@ -1,8 +1,8 @@
 # Pearls AQI Predictor - Project Memory
 
 ## 📝 Status
-- **Current Phase:** Phase 4 (Automation)
-- **Active State:** Phase 3 complete. Models trained and saved in local Model Registry. Ready for CI/CD setup.
+- **Current Phase:** Phase 6 (Final Review & Delivery)
+- **Active State:** Phase 5 complete. Web application backend and frontend connected. Ready for final testing and review.
 
 ## ✅ Completed Tasks
 - [x] Read and analyze project requirements from `AQI_predict-1.pdf`.
@@ -21,15 +21,16 @@
 - **Phase 2 (Hopsworks Setup):** Completed. Migrated to Hopsworks Feature Store.
 - **Phase 3 (Training & Evaluation):** Completed. Migrated models to Hopsworks Model Registry.
 - **Phase 4 (Automation):** Completed. Set up GitHub Actions CI/CD workflows for automated daily feature updates and weekly model training.
+- **Phase 5 (Web Application):** Completed. FastAPI backend implemented and connected to the HTML/CSS/JS frontend dashboard.
 
 ### 2. Next Steps
-- Transition to **Phase 5 (Web Application UI)**.
-- Start developing the FastAPI backend (`backend_api.py`) and the HTML/CSS/JS frontend.
-- Build components to display historical AQI trends and future predictions pulled from Hopsworks models.
+- Transition to **Phase 6 (Final Review & Delivery)**.
+- Perform end-to-end testing of the pipeline and UI.
+- Finalize documentation.
 
 ## ⏳ Remaining Tasks
 - [x] Phase 4: Setup GitHub Actions / Airflow for CI/CD automation.
-- [ ] Phase 5: Develop the FastAPI backend and HTML/CSS/JS frontend.
+- [x] Phase 5: Develop the FastAPI backend and HTML/CSS/JS frontend.
 - [ ] Phase 6: Final testing, UI polishing, and reporting.
 
 ## 📁 Active Files
