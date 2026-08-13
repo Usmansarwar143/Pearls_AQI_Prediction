@@ -33,7 +33,7 @@ def generate_predictions():
     print("Downloading models...")
     mr = project.get_model_registry()
     
-    hw_scaler = mr.get_model("aqi_scaler", version=1)
+    hw_scaler = mr.get_model("aqi_scaler", version=2)
     scaler_dir = hw_scaler.download()
     scaler = joblib.load(f"{scaler_dir}/scaler.pkl")
     
@@ -45,7 +45,7 @@ def generate_predictions():
     }
     
     for key, target in targets.items():
-        hw_model = mr.get_model(f"aqi_model_{target}", version=1)
+        hw_model = mr.get_model(f"aqi_model_{target}", version=2)
         model_dir = hw_model.download()
         models[key] = joblib.load(f"{model_dir}/best_model.pkl")
         
