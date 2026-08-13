@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+from epa_aqi import calculate_epa_aqi
 
 load_dotenv()
 
@@ -27,17 +28,30 @@ def fetch_historical_pollution(lat, lon, start_ts, end_ts):
     
     records = []
     for item in data.get('list', []):
+        components = item['components']
+        
+        # Calculate US EPA AQI (0-500 scale) from pollutant concentrations
+        # instead of using OpenWeather's 1-5 European scale
+        epa_aqi = calculate_epa_aqi(
+            pm2_5=components.get('pm2_5'),
+            pm10=components.get('pm10'),
+            o3=components.get('o3'),
+            no2=components.get('no2'),
+            so2=components.get('so2'),
+            co=components.get('co'),
+        )
+        
         records.append({
             'timestamp': item['dt'],
-            'aqi': item['main']['aqi'],
-            'co': item['components']['co'],
-            'no': item['components']['no'],
-            'no2': item['components']['no2'],
-            'o3': item['components']['o3'],
-            'so2': item['components']['so2'],
-            'pm2_5': item['components']['pm2_5'],
-            'pm10': item['components']['pm10'],
-            'nh3': item['components']['nh3'],
+            'aqi': epa_aqi,
+            'co': components['co'],
+            'no': components['no'],
+            'no2': components['no2'],
+            'o3': components['o3'],
+            'so2': components['so2'],
+            'pm2_5': components['pm2_5'],
+            'pm10': components['pm10'],
+            'nh3': components['nh3'],
         })
         
     df = pd.DataFrame(records)
