@@ -62,6 +62,27 @@ def fetch_historical_weather(lat, lon, start_date_str, end_date_str):
         return df
     return pd.DataFrame()
 
+def fetch_recent_weather(lat, lon, past_days=7):
+    """Fetch recent weather using Open-Meteo Forecast API.
+    
+    The Archive API has a ~5-7 day lag, so recent days are missing.
+    The Forecast API covers the last few days + future forecast with no lag.
+    """
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&past_days={past_days}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
+    
+    if 'hourly' in data:
+        df = pd.DataFrame({
+            'date': pd.to_datetime(data['hourly']['time']),
+            'temperature_2m': data['hourly']['temperature_2m'],
+            'relative_humidity_2m': data['hourly']['relative_humidity_2m'],
+            'wind_speed_10m': data['hourly']['wind_speed_10m']
+        })
+        return df
+    return pd.DataFrame()
+
 def get_data(days_back=730):
     lat, lon = get_coordinates()
     
@@ -74,10 +95,21 @@ def get_data(days_back=730):
     print("Fetching historical pollution data...")
     pollution_df = fetch_historical_pollution(lat, lon, start_ts, end_ts)
     
-    print("Fetching historical weather data...")
+    print("Fetching historical weather data (Archive API)...")
     start_date_str = start_date.strftime('%Y-%m-%d')
     end_date_str = end_date.strftime('%Y-%m-%d')
     weather_df = fetch_historical_weather(lat, lon, start_date_str, end_date_str)
+    
+    # Supplement with recent weather from the Forecast API to cover
+    # the ~5-7 day lag in the Archive API
+    print("Fetching recent weather data (Forecast API)...")
+    recent_weather_df = fetch_recent_weather(lat, lon, past_days=min(days_back, 7))
+    
+    if not recent_weather_df.empty:
+        weather_df = pd.concat([weather_df, recent_weather_df], ignore_index=True)
+        weather_df = weather_df.drop_duplicates(subset=['date'], keep='last')
+        weather_df = weather_df.sort_values('date').reset_index(drop=True)
+        print(f"Combined weather data range: {weather_df['date'].min()} to {weather_df['date'].max()}")
     
     return pollution_df, weather_df
 
