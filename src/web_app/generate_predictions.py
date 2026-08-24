@@ -8,6 +8,43 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def owm_to_epa_aqi(owm_value):
+    """
+    Convert a continuous OpenWeatherMap AQI value (1-5 scale) to the
+    US EPA AQI scale (0-500) using linear interpolation.
+
+    OpenWeatherMap scale mapping:
+        1 = Good       → EPA 0-50     (midpoint 25)
+        2 = Fair       → EPA 51-100   (midpoint 75)
+        3 = Moderate   → EPA 101-150  (midpoint 125)
+        4 = Poor       → EPA 151-200  (midpoint 175)
+        5 = Very Poor  → EPA 201-300  (midpoint 250)
+    """
+    # (OWM value, EPA AQI midpoint) breakpoints
+    breakpoints = [
+        (1, 25),
+        (2, 75),
+        (3, 125),
+        (4, 175),
+        (5, 250),
+    ]
+
+    # Clamp to valid range
+    owm_value = max(1.0, min(5.0, owm_value))
+
+    # Find the segment and interpolate
+    for i in range(len(breakpoints) - 1):
+        owm_lo, epa_lo = breakpoints[i]
+        owm_hi, epa_hi = breakpoints[i + 1]
+        if owm_value <= owm_hi:
+            ratio = (owm_value - owm_lo) / (owm_hi - owm_lo)
+            return round(epa_lo + ratio * (epa_hi - epa_lo))
+
+    # At the upper bound
+    return breakpoints[-1][1]
+
+
 def generate_predictions():
     print("Logging into Hopsworks...")
     project = hopsworks.login(
@@ -58,6 +95,14 @@ def generate_predictions():
     X_latest = numeric_df[feature_cols]
     X_scaled = scaler.transform(X_latest)
     
+    # Raw model predictions are on the OpenWeatherMap 1-5 scale
+    # Convert to EPA AQI (0-500 scale) for display
+    raw_1d = float(models['1d'].predict(X_scaled)[0])
+    raw_2d = float(models['2d'].predict(X_scaled)[0])
+    raw_3d = float(models['3d'].predict(X_scaled)[0])
+    
+    print(f"Raw model outputs (OWM 1-5 scale): 1d={raw_1d:.2f}, 2d={raw_2d:.2f}, 3d={raw_3d:.2f}")
+    
     preds = {
         "status": "success",
         "data": {
@@ -65,9 +110,9 @@ def generate_predictions():
             "current_date": str(latest_row['date'].values[0]),
             "history": history_data,
             "predictions": {
-                "1_day": float(models['1d'].predict(X_scaled)[0]),
-                "2_days": float(models['2d'].predict(X_scaled)[0]),
-                "3_days": float(models['3d'].predict(X_scaled)[0])
+                "1_day": owm_to_epa_aqi(raw_1d),
+                "2_days": owm_to_epa_aqi(raw_2d),
+                "3_days": owm_to_epa_aqi(raw_3d)
             }
         }
     }
