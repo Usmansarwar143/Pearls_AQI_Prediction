@@ -1,12 +1,12 @@
-name: daily-feature-pipeline
+name: hourly-feature-pipeline
 
 on:
   schedule:
-    - cron: '1 19 * * *' # Runs at 12:01 AM PKT (UTC+5) every day
+    - cron: '0 * * * *' # Runs at minute 0 of every hour
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
-  run-daily-update:
+  run-hourly-update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run daily update script
+      - name: Run hourly update script
         env:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
@@ -37,7 +37,7 @@ jobs:
           mkdir -p data/processed
           
           # Run script
-          python src/feature_pipeline/daily_update.py
+          python src/feature_pipeline/hourly_update.py
 
       - name: Generate static predictions
         env:
@@ -52,7 +52,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/predictions.json
           git diff --staged --quiet || (
-            git commit -m "chore: Update daily predictions" &&
+            git commit -m "chore: Update hourly predictions" &&
             git stash --include-untracked &&
             git pull --rebase origin main &&
             git push &&

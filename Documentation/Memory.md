@@ -20,7 +20,7 @@
 - **Phase 1 (Data Engineering & EDA):** Completed. `fetch_api.py` and `compute_features.py` fetch and process data correctly.
 - **Phase 2 (Hopsworks Setup):** Completed. Migrated to Hopsworks Feature Store.
 - **Phase 3 (Training & Evaluation):** Completed. Migrated models to Hopsworks Model Registry.
-- **Phase 4 (Automation):** Completed. Set up GitHub Actions CI/CD workflows for automated daily feature updates and weekly model training.
+- **Phase 4 (Automation):** Completed. Set up GitHub Actions CI/CD workflows for automated hourly feature updates (`hourly_feature_pipeline.yml`) and daily model training (`daily_training_pipeline.yml`).
 - **Phase 5 (Web Application):** Completed. FastAPI backend implemented and connected to the HTML/CSS/JS frontend dashboard.
 
 ### 2. Next Steps

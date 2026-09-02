@@ -7,14 +7,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Backward compatibility alias
-try:
-    from hourly_update import run_hourly_update
-except ImportError:
-    from .hourly_update import run_hourly_update
-
-def run_daily_update(days_back=3):
-    print(f"Starting daily update process for the last {days_back} days...")
+def run_hourly_update(days_back=1):
+    print(f"Starting hourly feature update for the last {days_back} day(s)...")
     
     # 1. Fetch Data
     p_df, w_df = get_data(days_back=days_back)
@@ -48,7 +42,7 @@ def run_daily_update(days_back=3):
     print("Inserting data into Hopsworks Feature Group...")
     aqi_fg.insert(features_df, write_options={"wait_for_job": False})
     
-    print("Daily update successfully pushed to Hopsworks!")
+    print("Hourly feature update successfully pushed to Hopsworks!")
 
 if __name__ == "__main__":
-    run_daily_update(days_back=3)
+    run_hourly_update(days_back=1)

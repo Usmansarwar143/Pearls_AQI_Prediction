@@ -1,12 +1,12 @@
-name: weekly-training-pipeline
+name: daily-training-pipeline
 
 on:
   schedule:
-    - cron: '0 2 * * 0' # Runs at 02:00 UTC every Sunday
+    - cron: '0 2 * * *' # Runs at 02:00 UTC every day
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
-  run-weekly-training:
+  run-daily-training:
     runs-on: ubuntu-latest
 
     steps:
