@@ -41,9 +41,33 @@ def backfill_historical_data(days_back=365):
     
     # Insert data (wait_for_job=True ensures backfill completes before training begins)
     print("Inserting data into Hopsworks Feature Group...")
-    aqi_fg.insert(features_df, write_options={"wait_for_job": True})
-    
-    print("Backfill process successfully completed and pushed to Hopsworks!")
+    try:
+        aqi_fg.insert(features_df, write_options={"wait_for_job": True})
+        print("Backfill process successfully completed and pushed to Hopsworks!")
+    except Exception as e:
+        print("\n" + "="*80)
+        print(f"HOPSWORKS MATERIALIZATION JOB FAILED for Feature Group version {fg_version}!")
+        print("Attempting to retrieve Spark execution logs from Hopsworks...")
+        print("="*80)
+        try:
+            jobs_api = project.get_jobs_api()
+            job_name = f"aqi_features_{fg_version}_offline_fg_materialization"
+            job = jobs_api.get_job(job_name)
+            executions = job.get_executions()
+            if executions:
+                out_path, err_path = executions[0].download_logs()
+                print(f"\n--- [HOPSWORKS STDERR: {job_name}] ---")
+                with open(err_path, "r", errors="ignore") as f_err:
+                    err_lines = f_err.read()
+                    print(err_lines[-3000:] if len(err_lines) > 3000 else err_lines)
+                print(f"\n--- [HOPSWORKS STDOUT: {job_name}] ---")
+                with open(out_path, "r", errors="ignore") as f_out:
+                    out_lines = f_out.read()
+                    print(out_lines[-3000:] if len(out_lines) > 3000 else out_lines)
+        except Exception as log_err:
+            print(f"Could not download job logs: {log_err}")
+        print("="*80 + "\n")
+        raise e
 
 if __name__ == "__main__":
     backfill_historical_data(days_back=365)
