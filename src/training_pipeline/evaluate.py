@@ -29,9 +29,10 @@ def evaluate_models():
     fs = project.get_feature_store()
     mr = project.get_model_registry()
     
-    print("Fetching Feature Group 'aqi_features'...")
+    fg_version = int(os.getenv("HOPSWORKS_FEATURE_GROUP_VERSION", 3))
+    print(f"Fetching Feature Group 'aqi_features' version {fg_version}...")
     try:
-        fg = fs.get_feature_group(name="aqi_features", version=2)
+        fg = fs.get_feature_group(name="aqi_features", version=fg_version)
         query = fg.select_all()
         df = query.read(read_options={"use_hive": True})
     except Exception as e:

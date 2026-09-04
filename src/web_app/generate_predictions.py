@@ -27,10 +27,10 @@ def generate_predictions():
         api_key_value=os.getenv("HOPSWORKS_API_KEY")
     )
     
-    # 1. Fetch Latest Data
-    print("Fetching latest AQI features...")
+    fg_version = int(os.getenv("HOPSWORKS_FEATURE_GROUP_VERSION", 3))
+    print(f"Fetching latest AQI features from Feature Group 'aqi_features' version {fg_version}...")
     fs = project.get_feature_store()
-    feature_group = fs.get_feature_group(name="aqi_features", version=2)
+    feature_group = fs.get_feature_group(name="aqi_features", version=fg_version)
     query = feature_group.select_all()
     df = query.read(read_options={"use_hive": True})
     

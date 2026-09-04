@@ -27,11 +27,12 @@ def run_hourly_update(days_back=1):
     )
     fs = project.get_feature_store()
     
+    fg_version = int(os.getenv("HOPSWORKS_FEATURE_GROUP_VERSION", 3))
     # Create/Get Feature Group
-    print("Fetching Feature Group 'aqi_features'...")
+    print(f"Fetching Feature Group 'aqi_features' version {fg_version}...")
     aqi_fg = fs.get_or_create_feature_group(
         name="aqi_features",
-        version=2,
+        version=fg_version,
         primary_key=["date"],
         description="Hourly Air Quality Index dataset with weather features",
         online_enabled=False,
