@@ -38,9 +38,9 @@ def backfill_historical_data(days_back=365):
         time_travel_format="HUDI"
     )
     
-    # Insert data
+    # Insert data (wait_for_job=True ensures backfill completes before training begins)
     print("Inserting data into Hopsworks Feature Group...")
-    aqi_fg.insert(features_df, write_options={"wait_for_job": False})
+    aqi_fg.insert(features_df, write_options={"wait_for_job": True})
     
     print("Backfill process successfully completed and pushed to Hopsworks!")
 

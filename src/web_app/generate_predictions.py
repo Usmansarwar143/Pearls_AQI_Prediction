@@ -9,40 +9,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def owm_to_epa_aqi(owm_value):
-    """
-    Convert a continuous OpenWeatherMap AQI value (1-5 scale) to the
-    US EPA AQI scale (0-500) using linear interpolation.
-
-    OpenWeatherMap scale mapping:
-        1 = Good       → EPA 0-50     (midpoint 25)
-        2 = Fair       → EPA 51-100   (midpoint 75)
-        3 = Moderate   → EPA 101-150  (midpoint 125)
-        4 = Poor       → EPA 151-200  (midpoint 175)
-        5 = Very Poor  → EPA 201-300  (midpoint 250)
-    """
-    # (OWM value, EPA AQI midpoint) breakpoints
-    breakpoints = [
-        (1, 25),
-        (2, 75),
-        (3, 125),
-        (4, 175),
-        (5, 250),
-    ]
-
-    # Clamp to valid range
-    owm_value = max(1.0, min(5.0, owm_value))
-
-    # Find the segment and interpolate
-    for i in range(len(breakpoints) - 1):
-        owm_lo, epa_lo = breakpoints[i]
-        owm_hi, epa_hi = breakpoints[i + 1]
-        if owm_value <= owm_hi:
-            ratio = (owm_value - owm_lo) / (owm_hi - owm_lo)
-            return round(epa_lo + ratio * (epa_hi - epa_lo))
-
-    # At the upper bound
-    return breakpoints[-1][1]
+def get_latest_model(mr, name):
+    """Retrieve the highest version model object from Hopsworks Model Registry."""
+    try:
+        models = mr.get_models(name)
+        if models:
+            return max(models, key=lambda m: m.version)
+        return mr.get_model(name)
+    except Exception:
+        return mr.get_model(name)
 
 
 def generate_predictions():
@@ -66,13 +41,25 @@ def generate_predictions():
     recent_history['date'] = recent_history['date'].astype(str)
     history_data = recent_history.to_dict(orient="records")
     
-    # 2. Download Models
-    print("Downloading models...")
+    # 2. Download Latest Scaler & Models
+    print("Downloading latest models from Model Registry...")
     mr = project.get_model_registry()
     
-    hw_scaler = mr.get_model("aqi_scaler", version=2)
+    hw_scaler = get_latest_model(mr, "aqi_scaler")
+    print(f"Using scaler version: {hw_scaler.version}")
     scaler_dir = hw_scaler.download()
-    scaler = joblib.load(f"{scaler_dir}/scaler.pkl")
+    scaler = joblib.load(os.path.join(scaler_dir, "scaler.pkl"))
+    
+    # Load feature column metadata if saved with the scaler
+    feature_cols_path = os.path.join(scaler_dir, "feature_cols.json")
+    if os.path.exists(feature_cols_path):
+        with open(feature_cols_path, "r") as f:
+            feature_cols = json.load(f)
+        print(f"Loaded feature columns from scaler metadata ({len(feature_cols)} features).")
+    else:
+        exclude_cols = ['date', 'timestamp', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
+        numeric_df = latest_row.select_dtypes(include=[np.number])
+        feature_cols = [c for c in numeric_df.columns if c not in exclude_cols]
     
     models = {}
     targets = {
@@ -82,26 +69,33 @@ def generate_predictions():
     }
     
     for key, target in targets.items():
-        hw_model = mr.get_model(f"aqi_model_{target}", version=2)
+        hw_model = get_latest_model(mr, f"aqi_model_{target}")
+        print(f"Using model for {target} (version: {hw_model.version})")
         model_dir = hw_model.download()
-        models[key] = joblib.load(f"{model_dir}/best_model.pkl")
+        models[key] = joblib.load(os.path.join(model_dir, "best_model.pkl"))
         
-    # 3. Predict
+    # 3. Predict Direct US EPA AQI
     print("Generating predictions...")
-    exclude_cols = ['date', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
     numeric_df = latest_row.select_dtypes(include=[np.number])
-    feature_cols = [c for c in numeric_df.columns if c not in exclude_cols]
-    
     X_latest = numeric_df[feature_cols]
     X_scaled = scaler.transform(X_latest)
     
-    # Raw model predictions are on the OpenWeatherMap 1-5 scale
-    # Convert to EPA AQI (0-500 scale) for display
     raw_1d = float(models['1d'].predict(X_scaled)[0])
     raw_2d = float(models['2d'].predict(X_scaled)[0])
     raw_3d = float(models['3d'].predict(X_scaled)[0])
     
-    print(f"Raw model outputs (OWM 1-5 scale): 1d={raw_1d:.2f}, 2d={raw_2d:.2f}, 3d={raw_3d:.2f}")
+    print(f"Raw model predictions: 1d={raw_1d:.2f}, 2d={raw_2d:.2f}, 3d={raw_3d:.2f}")
+
+    # Detect legacy 1-5 scale models and warn if needed
+    if any(p < 10 for p in [raw_1d, raw_2d, raw_3d]) and float(latest_row['aqi'].values[0]) > 20:
+        print("WARNING: Model predictions are < 10 while current AQI is on US EPA scale.")
+        print("This indicates an older model version trained on the 1-5 OWM scale was loaded.")
+        print("Please trigger the 'retrain-pipeline' GitHub Action to train and register EPA-scale models.")
+
+    # Clamp predictions to valid EPA AQI range [0, 500]
+    pred_1d = max(0, min(500, round(raw_1d)))
+    pred_2d = max(0, min(500, round(raw_2d)))
+    pred_3d = max(0, min(500, round(raw_3d)))
     
     preds = {
         "status": "success",
@@ -110,9 +104,9 @@ def generate_predictions():
             "current_date": str(latest_row['date'].values[0]),
             "history": history_data,
             "predictions": {
-                "1_day": owm_to_epa_aqi(raw_1d),
-                "2_days": owm_to_epa_aqi(raw_2d),
-                "3_days": owm_to_epa_aqi(raw_3d)
+                "1_day": pred_1d,
+                "2_days": pred_2d,
+                "3_days": pred_3d
             }
         }
     }
@@ -126,6 +120,7 @@ def generate_predictions():
         json.dump(preds, f, indent=4, default=str)
         
     print(f"Successfully saved predictions to {out_path}")
+
 
 if __name__ == "__main__":
     generate_predictions()

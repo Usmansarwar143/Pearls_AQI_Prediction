@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -35,7 +36,7 @@ def train_and_evaluate():
     df = df.dropna(subset=['target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d'])
     
     # Features (X)
-    exclude_cols = ['date', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
+    exclude_cols = ['date', 'timestamp', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
     numeric_df = df.select_dtypes(include=[np.number])
     feature_cols = [c for c in numeric_df.columns if c not in exclude_cols]
     X = numeric_df[feature_cols]
@@ -48,10 +49,12 @@ def train_and_evaluate():
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     
-    # Save the scaler locally first
+    # Save the scaler and feature column list locally first
     os.makedirs('data/models/scaler', exist_ok=True)
     joblib.dump(scaler, 'data/models/scaler/scaler.pkl')
-    print("Scaler saved locally.")
+    with open('data/models/scaler/feature_cols.json', 'w') as f:
+        json.dump(feature_cols, f, indent=2)
+    print("Scaler and feature column metadata saved locally.")
 
     mr = project.get_model_registry()
 
@@ -59,7 +62,7 @@ def train_and_evaluate():
     print("Uploading scaler to Hopsworks Model Registry...")
     hw_scaler = mr.python.create_model(
         name="aqi_scaler", 
-        description="StandardScaler for AQI features"
+        description="StandardScaler for AQI features (EPA scale, timestamp excluded)"
     )
     hw_scaler.save('data/models/scaler')
 
@@ -101,7 +104,7 @@ def train_and_evaluate():
         hw_model = mr.python.create_model(
             name=f"aqi_model_{target}", 
             metrics={"r2": rf_r2 if rf_r2 > ridge_r2 else ridge_r2},
-            description=f"Best model for {target} using {best_name}"
+            description=f"Best model for {target} using {best_name} (US EPA scale 0-500)"
         )
         hw_model.save(model_dir)
         print(f"  Saved {target} model to Hopsworks.")

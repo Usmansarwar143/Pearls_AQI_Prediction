@@ -22,20 +22,26 @@
 - **Phase 3 (Training & Evaluation):** Completed. Migrated models to Hopsworks Model Registry.
 - **Phase 4 (Automation):** Completed. Set up GitHub Actions CI/CD workflows for automated hourly feature updates (`hourly_feature_pipeline.yml`) and daily model training (`daily_training_pipeline.yml`).
 - **Phase 5 (Web Application):** Completed. FastAPI backend implemented and connected to the HTML/CSS/JS frontend dashboard.
+- **Bug Resolution (Forecast Discrepancy Fix):** Resolved forecast jump issue (154, 158, 136 vs current 76). Excluded `timestamp` from training features, removed artificial `owm_to_epa_aqi()` converter, configured dynamic model loading from Hopsworks Model Registry, and set `wait_for_job=True` for backfill synchronization.
 
 ### 2. Next Steps
 - Transition to **Phase 6 (Final Review & Delivery)**.
+- Trigger `retrain-pipeline` GitHub Action to backfill EPA feature data and train new models on EPA AQI scale.
 - Perform end-to-end testing of the pipeline and UI.
 - Finalize documentation.
 
 ## ⏳ Remaining Tasks
 - [x] Phase 4: Setup GitHub Actions / Airflow for CI/CD automation.
 - [x] Phase 5: Develop the FastAPI backend and HTML/CSS/JS frontend.
+- [x] Fix EPA forecast scale mismatch and dynamic model version loading.
 - [ ] Phase 6: Final testing, UI polishing, and reporting.
 
 ## 📁 Active Files
 - `Documentation/Memory.md`
-- `src/training_pipeline/*` (Ready for development)
+- `src/web_app/generate_predictions.py`
+- `src/training_pipeline/train.py`
+- `src/training_pipeline/evaluate.py`
+- `src/feature_pipeline/backfill.py`
 
 ---
 *Note: This file should be updated continuously as the project progresses to ensure all context and current state are tracked.*

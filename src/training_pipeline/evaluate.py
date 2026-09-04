@@ -9,6 +9,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def get_latest_model(mr, name):
+    """Retrieve the latest version of a model from Hopsworks Model Registry."""
+    try:
+        models = mr.get_models(name)
+        if models:
+            return max(models, key=lambda m: m.version)
+        return mr.get_model(name)
+    except Exception:
+        return mr.get_model(name)
+
+
 def evaluate_models():
     print("Connecting to Hopsworks...")
     project = hopsworks.login(
@@ -20,24 +31,26 @@ def evaluate_models():
     
     print("Fetching Feature Group 'aqi_features'...")
     try:
-        fg = fs.get_feature_group(name="aqi_features", version=1)
-        df = fg.read()
+        fg = fs.get_feature_group(name="aqi_features", version=2)
+        query = fg.select_all()
+        df = query.read(read_options={"use_hive": True})
     except Exception as e:
         print("Error fetching data from Hopsworks:", e)
         return
 
     df = df.dropna(subset=['target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d'])
     
-    exclude_cols = ['date', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
+    exclude_cols = ['date', 'timestamp', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
     numeric_df = df.select_dtypes(include=[np.number])
     feature_cols = [c for c in numeric_df.columns if c not in exclude_cols]
     X = numeric_df[feature_cols]
     
-    print("Downloading scaler from Model Registry...")
+    print("Downloading latest scaler from Model Registry...")
     try:
-        hw_scaler = mr.get_model("aqi_scaler", version=1)
+        hw_scaler = get_latest_model(mr, "aqi_scaler")
+        print(f"Loaded scaler version: {hw_scaler.version}")
         scaler_dir = hw_scaler.download()
-        scaler = joblib.load(scaler_dir + '/scaler.pkl')
+        scaler = joblib.load(os.path.join(scaler_dir, 'scaler.pkl'))
     except Exception as e:
         print("Error downloading scaler:", e)
         return
@@ -52,9 +65,10 @@ def evaluate_models():
         _, X_test, _, y_test = train_test_split(X_scaled, y, test_size=0.2, shuffle=False)
         
         try:
-            hw_model = mr.get_model(f"aqi_model_{target}", version=1)
+            hw_model = get_latest_model(mr, f"aqi_model_{target}")
+            print(f"Evaluating {target} using model version: {hw_model.version}")
             model_dir = hw_model.download()
-            model = joblib.load(model_dir + '/best_model.pkl')
+            model = joblib.load(os.path.join(model_dir, 'best_model.pkl'))
         except Exception as e:
             print(f"Error downloading model for {target}:", e)
             continue
