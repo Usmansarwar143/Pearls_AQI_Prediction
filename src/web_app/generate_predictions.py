@@ -56,6 +56,10 @@ def generate_predictions():
         with open(feature_cols_path, "r") as f:
             feature_cols = json.load(f)
         print(f"Loaded feature columns from scaler metadata ({len(feature_cols)} features).")
+    elif hasattr(scaler, 'feature_names_in_'):
+        # Use the scaler's own record of expected features (most reliable fallback)
+        feature_cols = list(scaler.feature_names_in_)
+        print(f"Using feature columns from scaler.feature_names_in_ ({len(feature_cols)} features).")
     else:
         exclude_cols = ['date', 'timestamp', 'target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d']
         numeric_df = latest_row.select_dtypes(include=[np.number])
@@ -77,6 +81,14 @@ def generate_predictions():
     # 3. Predict Direct US EPA AQI
     print("Generating predictions...")
     numeric_df = latest_row.select_dtypes(include=[np.number])
+    
+    # Ensure all features expected by the scaler are present, fill missing ones with 0
+    for col in feature_cols:
+        if col not in numeric_df.columns:
+            print(f"  WARNING: Feature '{col}' expected by scaler but missing from data. Filling with 0.")
+            numeric_df = numeric_df.copy()
+            numeric_df[col] = 0
+    
     X_latest = numeric_df[feature_cols]
     X_scaled = scaler.transform(X_latest)
     
