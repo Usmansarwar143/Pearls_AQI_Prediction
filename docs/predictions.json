@@ -1,7 +1,7 @@
 {
     "status": "success",
-    "generated_at": "2026-09-05T06:15:38.745839+00:00",
-    "generation_time_seconds": 167.68,
+    "generated_at": "2026-09-05T06:44:36.638005+00:00",
+    "generation_time_seconds": 60.5,
     "data": {
         "current_aqi": 79.0,
         "current_date": "2026-09-05T06:00:00.000000",
@@ -229,7 +229,7 @@
         "feature_correlations": null,
         "scaler_info": {
             "type": "StandardScaler",
-            "version": 19,
+            "version": 20,
             "n_features": 17,
             "means": {
                 "aqi": 140.1995,
@@ -273,7 +273,7 @@
         "model_info": {
             "1d": {
                 "model_type": "RandomForestRegressor",
-                "version": 19,
+                "version": 20,
                 "description": "Best model for target_aqi_next_1d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -288,7 +288,7 @@
             },
             "2d": {
                 "model_type": "RandomForestRegressor",
-                "version": 18,
+                "version": 19,
                 "description": "Best model for target_aqi_next_2d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -303,7 +303,7 @@
             },
             "3d": {
                 "model_type": "RandomForestRegressor",
-                "version": 18,
+                "version": 19,
                 "description": "Best model for target_aqi_next_3d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -910,7 +910,7 @@
         "pipeline_info": {
             "feature_group": "aqi_features",
             "feature_group_version": 3,
-            "scaler_version": 19,
+            "scaler_version": 20,
             "data_source": {
                 "pollution": "OpenWeather Air Pollution API",
                 "weather": "Open-Meteo Archive + Forecast API"
@@ -939,6 +939,7 @@
                 "relative_humidity_2m \u2014 Relative humidity (%)",
                 "wind_speed_10m \u2014 Wind speed at 10m height (km/h)"
             ]
-        }
+        },
+        "llm_insights": ""
     }
 }
