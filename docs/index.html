@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pearls AQI Predictor - Sadiqabad Air Quality Forecast</title>
+    <meta name="description" content="AI-powered Air Quality Index predictions for Sadiqabad, Pakistan. Featuring 3-day AQI forecasts, SHAP explainability analysis, and real-time monitoring.">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Chart.js & Mermaid.js -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
 
-    <!-- Custom CSS (Cache Busted v4) -->
-    <link rel="stylesheet" href="style.css?v=5">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
     <!-- Navigation Header -->
@@ -41,77 +40,234 @@
             <p>Fetching real-time Sadiqabad predictions from Hopsworks...</p>
         </div>
 
-        <!-- Dashboard Content (Predictions AT THE TOP!) -->
+        <!-- Dashboard Content -->
         <main id="dashboard" class="hidden">
-            
-            <!-- Current Status Section -->
-            <section class="current-status-section">
-                <div class="status-card" id="currentAqiCard">
-                    <div class="status-header">
-                        <h3>📍 Sadiqabad Live AQI Reading</h3>
-                        <span class="date-label" id="currentDateLabel">--</span>
+
+            <!-- Tab Navigation -->
+            <nav class="tab-nav" id="tabNav">
+                <button class="tab-btn active" data-tab="forecast" id="tabBtnForecast">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-label">Live AQI & Forecast</span>
+                </button>
+                <button class="tab-btn" data-tab="models" id="tabBtnModels">
+                    <span class="tab-icon">🧠</span>
+                    <span class="tab-label">Model Details</span>
+                </button>
+                <button class="tab-btn" data-tab="shap" id="tabBtnShap">
+                    <span class="tab-icon">🔍</span>
+                    <span class="tab-label">SHAP Analysis</span>
+                </button>
+                <button class="tab-btn" data-tab="architecture" id="tabBtnArchitecture">
+                    <span class="tab-icon">⚙️</span>
+                    <span class="tab-label">Architecture</span>
+                </button>
+                <div class="tab-indicator" id="tabIndicator"></div>
+            </nav>
+
+            <!-- ============ TAB 1: LIVE AQI & FORECAST ============ -->
+            <section class="tab-panel active" id="panelForecast">
+
+                <!-- Current Status -->
+                <div class="current-status-section">
+                    <div class="status-card" id="currentAqiCard">
+                        <div class="status-header">
+                            <h3>📍 Sadiqabad Live AQI Reading</h3>
+                            <span class="date-label" id="currentDateLabel">--</span>
+                        </div>
+                        <div class="aqi-display">
+                            <span class="aqi-value" id="currentAqiValue">--</span>
+                            <span class="aqi-category" id="currentAqiCategory">Loading...</span>
+                        </div>
                     </div>
-                    <div class="aqi-display">
-                        <span class="aqi-value" id="currentAqiValue">--</span>
-                        <span class="aqi-category" id="currentAqiCategory">Loading...</span>
+                </div>
+
+                <!-- Predictions Grid -->
+                <div class="predictions-section">
+                    <div class="section-title">
+                        <h2>Sadiqabad 3-Day AI Forecast</h2>
+                        <p>Advanced machine-learning generated atmospheric predictions tailored specifically for Sadiqabad.</p>
+                    </div>
+                    <div class="grid">
+                        <div class="forecast-card" id="day1Card">
+                            <h4>Tomorrow</h4>
+                            <div class="forecast-value" id="day1Value">--</div>
+                            <div class="forecast-category" id="day1Category">--</div>
+                        </div>
+                        <div class="forecast-card" id="day2Card">
+                            <h4>2-Day Outlook</h4>
+                            <div class="forecast-value" id="day2Value">--</div>
+                            <div class="forecast-category" id="day2Category">--</div>
+                        </div>
+                        <div class="forecast-card" id="day3Card">
+                            <h4>3-Day Outlook</h4>
+                            <div class="forecast-value" id="day3Value">--</div>
+                            <div class="forecast-category" id="day3Category">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="chart-section">
+                    <div class="section-title">
+                        <h2>Historical AQI Trend</h2>
+                        <p>Empirical air quality visualization over the trailing 7-day monitoring window.</p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="aqiChart"></canvas>
                     </div>
                 </div>
             </section>
 
-            <!-- Predictions Grid -->
-            <section class="predictions-section">
+            <!-- ============ TAB 2: MODEL DETAILS ============ -->
+            <section class="tab-panel" id="panelModels">
+
                 <div class="section-title">
-                    <h2>Sadiqabad 3-Day AI Forecast</h2>
-                    <p>Advanced machine-learning generated atmospheric predictions tailored specifically for the city of Sadiqabad.</p>
+                    <h2>Trained Models Overview</h2>
+                    <p>Details of the machine learning models powering each forecast horizon, including hyperparameters and evaluation metrics.</p>
                 </div>
-                <div class="grid">
-                    <!-- Day 1 Card -->
-                    <div class="forecast-card" id="day1Card">
-                        <h4>Tomorrow in Sadiqabad</h4>
-                        <div class="forecast-value" id="day1Value">--</div>
-                        <div class="forecast-category" id="day1Category">--</div>
-                    </div>
 
-                    <!-- Day 2 Card -->
-                    <div class="forecast-card" id="day2Card">
-                        <h4>2-Day Outlook</h4>
-                        <div class="forecast-value" id="day2Value">--</div>
-                        <div class="forecast-category" id="day2Category">--</div>
+                <!-- Training Configuration Summary -->
+                <div class="training-config-card">
+                    <h3>⚙️ Training Configuration</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <span class="config-label">Scaler</span>
+                            <span class="config-value">StandardScaler</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Train/Test Split</span>
+                            <span class="config-value">80% / 20% (temporal)</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Models Compared</span>
+                            <span class="config-value">RandomForest vs Ridge</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Selection Criterion</span>
+                            <span class="config-value">Best R² Score</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Day 3 Card -->
-                    <div class="forecast-card" id="day3Card">
-                        <h4>3-Day Outlook</h4>
-                        <div class="forecast-value" id="day3Value">--</div>
-                        <div class="forecast-category" id="day3Category">--</div>
+                <!-- Model Cards Container -->
+                <div class="model-cards-grid" id="modelCardsGrid">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Feature List -->
+                <div class="feature-list-card">
+                    <h3>📋 Feature Columns Used</h3>
+                    <p class="feature-list-subtitle">These are the input features fed to all models after scaling.</p>
+                    <div class="feature-chips" id="featureChips">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </section>
 
-            <!-- Chart Section -->
-            <section class="chart-section">
+            <!-- ============ TAB 3: SHAP ANALYSIS ============ -->
+            <section class="tab-panel" id="panelShap">
+
                 <div class="section-title">
-                    <h2>Sadiqabad Historical AQI Trend</h2>
-                    <p>Empirical air quality visualization over the trailing 7-day monitoring window.</p>
+                    <h2>SHAP Explainability Analysis</h2>
+                    <p>Understanding <em>why</em> the model predicts specific AQI values. SHAP (SHapley Additive exPlanations) decomposes each prediction into per-feature contributions.</p>
                 </div>
-                <div class="chart-wrapper">
-                    <canvas id="aqiChart"></canvas>
+
+                <!-- Global Feature Importance -->
+                <div class="shap-card">
+                    <div class="shap-card-header">
+                        <h3>🌍 Global Feature Importance</h3>
+                        <p>Mean |SHAP| values across all data points — shows which features matter most overall for predicting AQI.</p>
+                    </div>
+                    <div class="shap-chart-wrapper">
+                        <canvas id="shapGlobalChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Per-prediction SHAP breakdown -->
+                <div class="shap-waterfall-grid">
+                    <div class="shap-card">
+                        <div class="shap-card-header">
+                            <h3>📈 1-Day Forecast Breakdown</h3>
+                            <p>Feature contributions pushing the predicted AQI up (red) or down (blue) from the base value.</p>
+                        </div>
+                        <div class="shap-meta" id="shapMeta1d"></div>
+                        <div class="shap-chart-wrapper">
+                            <canvas id="shapWaterfall1d"></canvas>
+                        </div>
+                    </div>
+                    <div class="shap-card">
+                        <div class="shap-card-header">
+                            <h3>📈 2-Day Forecast Breakdown</h3>
+                            <p>Feature contributions for the 2-day ahead prediction.</p>
+                        </div>
+                        <div class="shap-meta" id="shapMeta2d"></div>
+                        <div class="shap-chart-wrapper">
+                            <canvas id="shapWaterfall2d"></canvas>
+                        </div>
+                    </div>
+                    <div class="shap-card">
+                        <div class="shap-card-header">
+                            <h3>📈 3-Day Forecast Breakdown</h3>
+                            <p>Feature contributions for the 3-day ahead prediction.</p>
+                        </div>
+                        <div class="shap-meta" id="shapMeta3d"></div>
+                        <div class="shap-chart-wrapper">
+                            <canvas id="shapWaterfall3d"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SHAP Explanation -->
+                <div class="shap-explainer-card">
+                    <h3>📖 How to Read SHAP Charts</h3>
+                    <div class="explainer-grid">
+                        <div class="explainer-item">
+                            <div class="explainer-icon">🔴</div>
+                            <div>
+                                <strong>Positive SHAP Value (Red)</strong>
+                                <p>This feature <em>increases</em> the predicted AQI. Larger bars mean stronger push toward higher pollution.</p>
+                            </div>
+                        </div>
+                        <div class="explainer-item">
+                            <div class="explainer-icon">🔵</div>
+                            <div>
+                                <strong>Negative SHAP Value (Blue)</strong>
+                                <p>This feature <em>decreases</em> the predicted AQI. It contributes toward cleaner air predictions.</p>
+                            </div>
+                        </div>
+                        <div class="explainer-item">
+                            <div class="explainer-icon">📊</div>
+                            <div>
+                                <strong>Base Value</strong>
+                                <p>The model's average prediction across all training data. Individual feature SHAP values add to or subtract from this base to produce the final prediction.</p>
+                            </div>
+                        </div>
+                        <div class="explainer-item">
+                            <div class="explainer-icon">🌍</div>
+                            <div>
+                                <strong>Global Importance</strong>
+                                <p>Mean absolute SHAP value for each feature across the entire dataset. Higher = more influential feature overall.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- Explanatory Overview Section (BELOW PREDICTIONS) -->
-            <section class="hero-section">
-                <div class="hero-content">
-                    <span class="hero-subheading">Why & How We Forecast Sadiqabad's Air Quality</span>
-                    <h2>Enterprise-Grade Serverless Intelligence</h2>
-                    <p class="hero-description">
-                        The Pearls AQI Predictor is dedicated to providing high-accuracy environmental intelligence for <strong>Sadiqabad</strong>. Powered by a fully autonomous, serverless machine learning architecture, our system continuously assimilates regional meteorological and pollutant metrics, computes dynamic features in the Hopsworks Feature Store, and publishes dependable forecasts to protect community health.
-                    </p>
+            <!-- ============ TAB 4: ARCHITECTURE ============ -->
+            <section class="tab-panel" id="panelArchitecture">
+                
+                <!-- Hero/Intro -->
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <span class="hero-subheading">Why & How We Forecast Sadiqabad's Air Quality</span>
+                        <h2>Enterprise-Grade Serverless Intelligence</h2>
+                        <p class="hero-description">
+                            The Pearls AQI Predictor is dedicated to providing high-accuracy environmental intelligence for <strong>Sadiqabad</strong>. Powered by a fully autonomous, serverless machine learning architecture, our system continuously assimilates regional meteorological and pollutant metrics, computes dynamic features in the Hopsworks Feature Store, and publishes dependable forecasts to protect community health.
+                        </p>
+                    </div>
                 </div>
-            </section>
 
-            <!-- Project Technical Details -->
-            <section class="architecture-section">
+                <!-- Architecture Diagram Cards -->
                 <div class="section-title">
                     <h2>System Architecture & Automations</h2>
                     <p>Under the hood of our automated CI/CD feature pipelines and machine learning registries for Sadiqabad.</p>
@@ -120,37 +276,79 @@
                     <div class="arch-box">
                         <h4>⚙️ Automated Data Pipeline</h4>
                         <p>An autonomous GitHub Actions workflow triggers hourly, fetching raw environmental data from external weather & pollution APIs, generating advanced temporal features, and pushing structured datasets directly to the Hopsworks Feature Store.</p>
-                        <div class="mermaid">
-                        graph TD
-                            A(Sadiqabad Weather API) --> B[Feature Generator Script]
-                            B --> C[(Hopsworks Feature Store)]
+                        <div class="arch-flow">
+                            <div class="flow-node flow-source">Sadiqabad Weather API</div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-node flow-process">Feature Generator</div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-node flow-store">Hopsworks Feature Store</div>
                         </div>
                     </div>
                     <div class="arch-box">
                         <h4>🧠 ML Training & Registry</h4>
                         <p>A daily automated continuous training (CT) pipeline extracts historical feature targets from Hopsworks, optimizes regression estimators, rigorously benchmarks performance against validation splits, and saves verified champions to the Model Registry.</p>
-                        <div class="mermaid">
-                        graph TD
-                            A[(Feature Store)] --> B[Model Training Engine]
-                            B --> C[(Model Registry)]
+                        <div class="arch-flow">
+                            <div class="flow-node flow-store">Feature Store</div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-node flow-process">Training Engine</div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-node flow-store">Model Registry</div>
                         </div>
                     </div>
                     <div class="arch-box">
-                        <h4>📊 Serverless Inference API</h4>
-                        <p>This dynamic frontend dashboard interfaces cleanly with our fast FastAPI serving infrastructure to query model artifacts and live feature aggregations in sub-second execution times—delivering seamless analytical insights without managing persistent compute instances.</p>
-                        <div class="mermaid">
-                        graph TD
-                            A[(Registry & Store)] --> B[FastAPI Server]
-                            B --> C(Interactive Dashboard)
+                        <h4>📊 Serverless Inference</h4>
+                        <p>This dynamic frontend dashboard interfaces cleanly with pre-computed prediction artifacts, querying model outputs and SHAP explainability data—delivering seamless analytical insights without managing persistent compute instances.</p>
+                        <div class="arch-flow">
+                            <div class="flow-node flow-store">Registry & Store</div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-node flow-process">Prediction Script</div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-node flow-source">Dashboard</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Pipeline Schedule Table -->
+                <div class="pipeline-schedule-card">
+                    <h3>🕐 Pipeline Schedule</h3>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Pipeline</th>
+                                <th>Trigger</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>hourly-feature-pipeline</code></td>
+                                <td>Every hour (cron: <code>0 * * * *</code>)</td>
+                                <td>Fetches fresh pollution + weather data, engineers features, pushes to Hopsworks, regenerates predictions</td>
+                            </tr>
+                            <tr>
+                                <td><code>daily-training-pipeline</code></td>
+                                <td>Daily</td>
+                                <td>Retrains all models on latest feature data, evaluates, and uploads to Model Registry</td>
+                            </tr>
+                            <tr>
+                                <td><code>retrain-pipeline</code></td>
+                                <td>Manual dispatch</td>
+                                <td>Full backfill + retrain — runs backfill.py, train.py, and generates fresh predictions</td>
+                            </tr>
+                            <tr>
+                                <td><code>deploy-pages</code></td>
+                                <td>On push to main</td>
+                                <td>Deploys the dashboard to GitHub Pages</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- Proper Professional Footer -->
+    <!-- Footer -->
     <footer class="app-footer">
         <div class="footer-container">
             <div class="footer-branding">
@@ -163,7 +361,7 @@
         </div>
     </footer>
 
-    <!-- Custom JS (Cache Busted v4) -->
-    <script src="script.js?v=4"></script>
+    <!-- Custom JS -->
+    <script src="script.js?v=10"></script>
 </body>
 </html>
