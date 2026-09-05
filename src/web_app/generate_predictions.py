@@ -5,6 +5,7 @@ import joblib
 import pandas as pd
 import numpy as np
 import shap
+from datetime import datetime, timezone
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
@@ -38,6 +39,8 @@ def get_model_metadata(model, hw_model):
             "min_samples_leaf": model.min_samples_leaf,
             "max_features": str(model.max_features),
             "random_state": model.random_state,
+            "criterion": model.criterion,
+            "n_features_in": int(model.n_features_in_) if hasattr(model, 'n_features_in_') else None,
         }
     elif isinstance(model, Ridge):
         params = {
@@ -45,11 +48,13 @@ def get_model_metadata(model, hw_model):
             "solver": model.solver,
             "fit_intercept": model.fit_intercept,
             "max_iter": model.max_iter,
+            "n_features_in": int(model.n_features_in_) if hasattr(model, 'n_features_in_') else None,
         }
 
     return {
         "model_type": model_type,
         "version": hw_model.version,
+        "description": hw_model.description if hasattr(hw_model, 'description') else "",
         "parameters": params,
     }
 
@@ -69,18 +74,15 @@ def compute_shap_values(model, X_scaled, feature_cols, X_background=None):
             shap_values = explainer.shap_values(X_scaled)
             base_value = float(explainer.expected_value)
         else:
-            # Fallback for unknown model types
             explainer = shap.KernelExplainer(model.predict, X_scaled[:1])
             shap_values = explainer.shap_values(X_scaled)
             base_value = float(explainer.expected_value)
 
-        # Get SHAP values for the latest row (first/only row)
         if len(shap_values.shape) == 1:
             sv = shap_values
         else:
             sv = shap_values[0]
 
-        # Build per-feature breakdown
         feature_shap = {}
         for i, col in enumerate(feature_cols):
             feature_shap[col] = round(float(sv[i]), 4)
@@ -111,7 +113,6 @@ def compute_global_importance(model, X_scaled_full, feature_cols):
         for i, col in enumerate(feature_cols):
             importance[col] = round(float(mean_abs_shap[i]), 4)
 
-        # Sort by importance descending
         importance = dict(sorted(importance.items(), key=lambda x: x[1], reverse=True))
         return importance
     except Exception as e:
@@ -119,7 +120,120 @@ def compute_global_importance(model, X_scaled_full, feature_cols):
         return None
 
 
+def compute_dataset_statistics(df, feature_cols):
+    """Compute comprehensive dataset statistics for dashboard display."""
+    stats = {
+        "total_rows": int(len(df)),
+        "date_range": {
+            "start": str(df['date'].min()),
+            "end": str(df['date'].max()),
+        },
+        "aqi_statistics": {
+            "mean": round(float(df['aqi'].mean()), 2),
+            "median": round(float(df['aqi'].median()), 2),
+            "std": round(float(df['aqi'].std()), 2),
+            "min": round(float(df['aqi'].min()), 2),
+            "max": round(float(df['aqi'].max()), 2),
+            "q25": round(float(df['aqi'].quantile(0.25)), 2),
+            "q75": round(float(df['aqi'].quantile(0.75)), 2),
+        },
+        "feature_statistics": {},
+        "missing_values": {},
+        "aqi_distribution": {},
+    }
+
+    # Feature-level statistics
+    numeric_df = df.select_dtypes(include=[np.number])
+    for col in feature_cols:
+        if col in numeric_df.columns:
+            stats["feature_statistics"][col] = {
+                "mean": round(float(numeric_df[col].mean()), 4),
+                "std": round(float(numeric_df[col].std()), 4),
+                "min": round(float(numeric_df[col].min()), 4),
+                "max": round(float(numeric_df[col].max()), 4),
+            }
+
+    # Missing value counts
+    for col in df.columns:
+        missing = int(df[col].isna().sum())
+        if missing > 0:
+            stats["missing_values"][col] = missing
+
+    # AQI category distribution
+    aqi_cats = {
+        "Good (0-50)": int(((df['aqi'] >= 0) & (df['aqi'] <= 50)).sum()),
+        "Moderate (51-100)": int(((df['aqi'] > 50) & (df['aqi'] <= 100)).sum()),
+        "Unhealthy for Sensitive (101-150)": int(((df['aqi'] > 100) & (df['aqi'] <= 150)).sum()),
+        "Unhealthy (151-200)": int(((df['aqi'] > 150) & (df['aqi'] <= 200)).sum()),
+        "Very Unhealthy (201-300)": int(((df['aqi'] > 200) & (df['aqi'] <= 300)).sum()),
+        "Hazardous (301+)": int((df['aqi'] > 300).sum()),
+    }
+    stats["aqi_distribution"] = aqi_cats
+
+    return stats
+
+
+def compute_correlation_matrix(df, feature_cols):
+    """Compute correlation of features with AQI target."""
+    try:
+        cols_to_use = [c for c in feature_cols if c in df.columns] + ['aqi']
+        corr = df[cols_to_use].corr()['aqi'].drop('aqi').to_dict()
+        return {k: round(float(v), 4) for k, v in sorted(corr.items(), key=lambda x: abs(x[1]), reverse=True)}
+    except Exception:
+        return None
+
+
+def compute_residual_analysis(models, X_test_scaled, y_test_dict):
+    """Compute residuals for error distribution analysis."""
+    residuals = {}
+    for key, model in models.items():
+        if key in y_test_dict:
+            preds = model.predict(X_test_scaled)
+            res = y_test_dict[key] - preds
+            residuals[key] = {
+                "mean_residual": round(float(res.mean()), 4),
+                "std_residual": round(float(res.std()), 4),
+                "max_overpredict": round(float(res.min()), 4),
+                "max_underpredict": round(float(res.max()), 4),
+                "residual_histogram": {
+                    "bins": list(np.round(np.linspace(float(res.min()), float(res.max()), 11), 2)),
+                    "counts": [int(c) for c in np.histogram(res, bins=10)[0]],
+                },
+            }
+    return residuals
+
+
+def compute_prediction_intervals(models, X_scaled, feature_cols):
+    """Compute prediction confidence using tree variance (RF only)."""
+    intervals = {}
+    for key, model in models.items():
+        if isinstance(model, RandomForestRegressor):
+            tree_preds = np.array([tree.predict(X_scaled) for tree in model.estimators_])
+            mean_pred = float(tree_preds.mean())
+            std_pred = float(tree_preds.std())
+            intervals[key] = {
+                "mean": round(mean_pred, 2),
+                "std": round(std_pred, 2),
+                "ci_lower": round(max(0, mean_pred - 1.96 * std_pred), 2),
+                "ci_upper": round(min(500, mean_pred + 1.96 * std_pred), 2),
+                "n_trees": model.n_estimators,
+            }
+    return intervals
+
+
+def get_latest_feature_values(latest_row, feature_cols):
+    """Extract the actual feature values for the latest row for display."""
+    values = {}
+    numeric = latest_row.select_dtypes(include=[np.number])
+    for col in feature_cols:
+        if col in numeric.columns:
+            values[col] = round(float(numeric[col].values[0]), 4)
+    return values
+
+
 def generate_predictions():
+    generation_start = datetime.now(timezone.utc)
+    
     print("Logging into Hopsworks...")
     project = hopsworks.login(
         project=os.getenv("HOPSWORKS_PROJECT_NAME"),
@@ -136,9 +250,15 @@ def generate_predictions():
     df = df.sort_values(by="date", ascending=False)
     latest_row = df.iloc[0:1]
     
-    recent_history = df.head(7)[['date', 'aqi']].sort_values(by="date", ascending=True)
+    # Extended history for trend analysis (30 data points)
+    recent_history = df.head(30)[['date', 'aqi']].sort_values(by="date", ascending=True)
     recent_history['date'] = recent_history['date'].astype(str)
     history_data = recent_history.to_dict(orient="records")
+    
+    # Also keep short 7-day history
+    short_history = df.head(7)[['date', 'aqi']].sort_values(by="date", ascending=True)
+    short_history['date'] = short_history['date'].astype(str)
+    short_history_data = short_history.to_dict(orient="records")
     
     # 2. Download Latest Scaler & Models
     print("Downloading latest models from Model Registry...")
@@ -156,7 +276,6 @@ def generate_predictions():
             feature_cols = json.load(f)
         print(f"Loaded feature columns from scaler metadata ({len(feature_cols)} features).")
     elif hasattr(scaler, 'feature_names_in_'):
-        # Use the scaler's own record of expected features (most reliable fallback)
         feature_cols = list(scaler.feature_names_in_)
         print(f"Using feature columns from scaler.feature_names_in_ ({len(feature_cols)} features).")
     else:
@@ -185,7 +304,6 @@ def generate_predictions():
     print("Generating predictions...")
     numeric_df = latest_row.select_dtypes(include=[np.number])
     
-    # Ensure all features expected by the scaler are present, fill missing ones with 0
     for col in feature_cols:
         if col not in numeric_df.columns:
             print(f"  WARNING: Feature '{col}' expected by scaler but missing from data. Filling with 0.")
@@ -195,7 +313,7 @@ def generate_predictions():
     X_latest = numeric_df[feature_cols]
     X_scaled = scaler.transform(X_latest)
     
-    # 4. Prepare background data for SHAP (use full dataset)
+    # 4. Prepare background data for SHAP
     print("Preparing data for SHAP analysis...")
     df_clean = df.dropna(subset=['target_aqi_next_1d', 'target_aqi_next_2d', 'target_aqi_next_3d'])
     full_numeric = df_clean.select_dtypes(include=[np.number])
@@ -206,29 +324,25 @@ def generate_predictions():
     X_full = full_numeric[feature_cols]
     X_full_scaled = scaler.transform(X_full)
     
-    # Limit background data to avoid slow SHAP computation
     max_background = min(200, len(X_full_scaled))
     X_background = X_full_scaled[:max_background]
     
-    # 5. Predict and compute SHAP
+    # 5. Predict
     raw_1d = float(models['1d'].predict(X_scaled)[0])
     raw_2d = float(models['2d'].predict(X_scaled)[0])
     raw_3d = float(models['3d'].predict(X_scaled)[0])
     
     print(f"Raw model predictions: 1d={raw_1d:.2f}, 2d={raw_2d:.2f}, 3d={raw_3d:.2f}")
 
-    # Detect legacy 1-5 scale models and warn if needed
     if any(p < 10 for p in [raw_1d, raw_2d, raw_3d]) and float(latest_row['aqi'].values[0]) > 20:
         print("WARNING: Model predictions are < 10 while current AQI is on US EPA scale.")
-        print("This indicates an older model version trained on the 1-5 OWM scale was loaded.")
-        print("Please trigger the 'retrain-pipeline' GitHub Action to train and register EPA-scale models.")
+        print("Please trigger the 'retrain-pipeline' GitHub Action.")
 
-    # Clamp predictions to valid EPA AQI range [0, 500]
     pred_1d = max(0, min(500, round(raw_1d)))
     pred_2d = max(0, min(500, round(raw_2d)))
     pred_3d = max(0, min(500, round(raw_3d)))
     
-    # 6. Compute SHAP values for each model
+    # 6. SHAP values per model
     print("Computing SHAP values...")
     shap_data = {}
     for key in ['1d', '2d', '3d']:
@@ -239,15 +353,17 @@ def generate_predictions():
         if shap_result:
             shap_data[key] = shap_result
     
-    # 7. Compute global feature importance using the 1d model (primary)
+    # 7. Global feature importance
     print("Computing global feature importance...")
     global_importance = compute_global_importance(
         models['1d'], X_background, feature_cols
     )
     
-    # 8. Compute evaluation metrics on a test split
+    # 8. Evaluation metrics
     print("Computing evaluation metrics...")
     eval_metrics = {}
+    y_test_dict = {}
+    X_test_scaled = None
     try:
         y_targets = {}
         for key, target in targets.items():
@@ -256,47 +372,149 @@ def generate_predictions():
         
         for key, target in targets.items():
             if key in y_targets:
-                _, X_test, _, y_test = train_test_split(
+                X_train, X_test, y_train, y_test = train_test_split(
                     X_full_scaled, y_targets[key], test_size=0.2, shuffle=False
                 )
-                preds = models[key].predict(X_test)
+                X_test_scaled = X_test
+                y_test_dict[key] = y_test
+                preds_eval = models[key].predict(X_test)
+                
+                # Actual vs Predicted samples (last 20)
+                actual_vs_pred = []
+                sample_count = min(20, len(y_test))
+                for i in range(sample_count):
+                    actual_vs_pred.append({
+                        "actual": round(float(y_test[-(sample_count - i)]), 2),
+                        "predicted": round(float(preds_eval[-(sample_count - i)]), 2),
+                    })
+                
                 eval_metrics[key] = {
-                    "r2": round(float(r2_score(y_test, preds)), 4),
-                    "rmse": round(float(np.sqrt(mean_squared_error(y_test, preds))), 4),
-                    "mae": round(float(mean_absolute_error(y_test, preds)), 4),
+                    "r2": round(float(r2_score(y_test, preds_eval)), 4),
+                    "rmse": round(float(np.sqrt(mean_squared_error(y_test, preds_eval))), 4),
+                    "mae": round(float(mean_absolute_error(y_test, preds_eval)), 4),
                     "test_samples": len(y_test),
+                    "train_samples": len(y_train),
+                    "actual_vs_predicted": actual_vs_pred,
                 }
                 print(f"  {key}: R²={eval_metrics[key]['r2']}, RMSE={eval_metrics[key]['rmse']}, MAE={eval_metrics[key]['mae']}")
     except Exception as e:
         print(f"  WARNING: Metric computation failed: {e}")
     
-    # 9. Build output JSON
-    preds = {
+    # 9. Dataset statistics
+    print("Computing dataset statistics...")
+    dataset_stats = compute_dataset_statistics(df, feature_cols)
+    
+    # 10. Feature-AQI correlations
+    print("Computing feature correlations...")
+    correlations = compute_correlation_matrix(df_clean, feature_cols)
+    
+    # 11. Residual analysis
+    print("Computing residual analysis...")
+    residuals = {}
+    if X_test_scaled is not None and y_test_dict:
+        residuals = compute_residual_analysis(models, X_test_scaled, y_test_dict)
+    
+    # 12. Prediction confidence intervals (RF only)
+    print("Computing prediction intervals...")
+    prediction_intervals = compute_prediction_intervals(models, X_scaled, feature_cols)
+    
+    # 13. Latest feature values
+    latest_feature_values = get_latest_feature_values(latest_row, feature_cols)
+    
+    # 14. Scaler parameters
+    scaler_info = {
+        "type": "StandardScaler",
+        "version": hw_scaler.version,
+        "n_features": len(feature_cols),
+        "means": {col: round(float(scaler.mean_[i]), 4) for i, col in enumerate(feature_cols)} if hasattr(scaler, 'mean_') else {},
+        "scales": {col: round(float(scaler.scale_[i]), 4) for i, col in enumerate(feature_cols)} if hasattr(scaler, 'scale_') else {},
+    }
+    
+    generation_end = datetime.now(timezone.utc)
+    
+    # 15. Build comprehensive output JSON
+    output = {
         "status": "success",
+        "generated_at": generation_end.isoformat(),
+        "generation_time_seconds": round((generation_end - generation_start).total_seconds(), 2),
         "data": {
+            # Core predictions
             "current_aqi": float(latest_row['aqi'].values[0]),
             "current_date": str(latest_row['date'].values[0]),
-            "history": history_data,
+            "history": short_history_data,
+            "extended_history": history_data,
             "predictions": {
                 "1_day": pred_1d,
                 "2_days": pred_2d,
-                "3_days": pred_3d
+                "3_days": pred_3d,
+                "raw_1_day": round(raw_1d, 4),
+                "raw_2_days": round(raw_2d, 4),
+                "raw_3_days": round(raw_3d, 4),
             },
+            "prediction_intervals": prediction_intervals,
+            
+            # Feature info
             "feature_columns": feature_cols,
+            "latest_feature_values": latest_feature_values,
+            "feature_correlations": correlations,
+            "scaler_info": scaler_info,
+            
+            # Model details
             "model_info": model_metadata,
             "evaluation_metrics": eval_metrics,
+            "residual_analysis": residuals,
+            
+            # SHAP explainability
             "shap_values": shap_data,
             "global_feature_importance": global_importance,
+            
+            # Dataset overview
+            "dataset_statistics": dataset_stats,
+            
+            # Pipeline info
+            "pipeline_info": {
+                "feature_group": "aqi_features",
+                "feature_group_version": fg_version,
+                "scaler_version": hw_scaler.version,
+                "data_source": {
+                    "pollution": "OpenWeather Air Pollution API",
+                    "weather": "Open-Meteo Archive + Forecast API",
+                },
+                "target_city": "Sadiqabad, Punjab, Pakistan",
+                "aqi_standard": "US EPA (0-500 scale)",
+                "feature_engineering": [
+                    "hour — Hour of day (0-23)",
+                    "day_of_week — Day of week (0=Monday, 6=Sunday)",
+                    "month — Month of year (1-12)",
+                    "aqi_change_rate — Hourly AQI change (difference from previous reading)",
+                    "aqi_rolling_24h — 24-hour rolling average AQI",
+                ],
+                "pollutants_tracked": [
+                    "PM2.5 — Fine particulate matter",
+                    "PM10 — Coarse particulate matter",
+                    "O3 — Ozone",
+                    "NO2 — Nitrogen Dioxide",
+                    "SO2 — Sulfur Dioxide",
+                    "CO — Carbon Monoxide",
+                    "NO — Nitric Oxide",
+                    "NH3 — Ammonia",
+                ],
+                "weather_features": [
+                    "temperature_2m — Temperature at 2m height (°C)",
+                    "relative_humidity_2m — Relative humidity (%)",
+                    "wind_speed_10m — Wind speed at 10m height (km/h)",
+                ],
+            },
         }
     }
     
-    # 10. Save to JSON
+    # Save to JSON
     docs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'docs')
     os.makedirs(docs_dir, exist_ok=True)
     out_path = os.path.join(docs_dir, 'predictions.json')
     
     with open(out_path, 'w') as f:
-        json.dump(preds, f, indent=4, default=str)
+        json.dump(output, f, indent=4, default=str)
         
     print(f"Successfully saved predictions to {out_path}")
 
