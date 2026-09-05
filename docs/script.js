@@ -312,13 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Object.entries(data.residual_analysis).forEach(([key, res]) => {
             const card = document.createElement('div');
-            card.className = 'residual-stat-card';
+            card.className = 'residual-stat-card skeuo-panel';
             card.innerHTML = `
-                <h5>${horizonNames[key]} Residuals</h5>
-                <div class="residual-stat-row"><span>Mean Error</span><span>${res.mean_residual}</span></div>
-                <div class="residual-stat-row"><span>Std Dev</span><span>${res.std_residual}</span></div>
-                <div class="residual-stat-row"><span>Max Over-predict</span><span>${res.max_overpredict}</span></div>
-                <div class="residual-stat-row"><span>Max Under-predict</span><span>${res.max_underpredict}</span></div>`;
+                <h5 style="margin-bottom:1rem;">${horizonNames[key]} Residuals</h5>
+                <div class="residual-stat-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span>Mean Error</span><span>${res.mean_residual}</span></div>
+                <div class="residual-stat-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span>Std Dev</span><span>${res.std_residual}</span></div>
+                <div class="residual-stat-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span>Max Over-predict</span><span>${res.max_overpredict}</span></div>
+                <div class="residual-stat-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span>Max Under-predict</span><span>${res.max_underpredict}</span></div>`;
             grid.appendChild(card);
 
             // Residual histogram
