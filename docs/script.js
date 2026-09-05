@@ -103,10 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('currentDateLabel').textContent = `As of ${formatDate(data.current_date)}`;
         document.getElementById('currentAqiValue').textContent = currentAqi;
         document.getElementById('currentAqiCategory').textContent = currentDetails.label;
-        document.getElementById('currentAqiCategory').className = `aqi-category ${currentDetails.className}`;
+        document.getElementById('currentAqiCategory').className = `aqi-category skeuo-btn ${currentDetails.className}`;
+
+        // AI Insights (LLM)
+        if (data.llm_insights) {
+            const aiCard = document.getElementById('aiInsightsCard');
+            aiCard.classList.remove('hidden');
+            document.getElementById('aiInsightsText').textContent = data.llm_insights;
+        }
 
         // Health guidance
-        document.getElementById('guidanceIcon').textContent = guidance.icon;
+        document.getElementById('guidanceIcon').textContent = "i";
+        document.getElementById('guidanceIcon').style.fontWeight = "900";
+        document.getElementById('guidanceIcon').style.color = currentDetails.color || "#0984e3";
         document.getElementById('guidanceTitle').textContent = guidance.title;
         document.getElementById('guidanceText').textContent = guidance.text;
 
@@ -122,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const details = getAqiDetails(val);
             document.getElementById(`${id}Value`).textContent = val;
             document.getElementById(`${id}Category`).textContent = details.label;
-            document.getElementById(`${id}Category`).className = `forecast-category ${details.className}`;
+            document.getElementById(`${id}Category`).className = `forecast-category skeuo-inset ${details.className}`;
 
             // Confidence intervals
             const ciEl = document.getElementById(`${id}Confidence`);

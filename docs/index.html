@@ -8,7 +8,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
     <header class="app-header">
@@ -22,10 +22,10 @@
             </div>
             <div class="header-right">
                 <div class="header-meta" id="headerMeta">
-                    <span class="meta-chip" id="lastUpdated">⏱ Loading...</span>
+                    <span class="meta-chip" id="lastUpdated">Loading...</span>
                 </div>
                 <div class="header-badge">
-                    <span class="status-dot"></span> 📍 Sadiqabad, Pakistan
+                    <span class="status-dot"></span> Sadiqabad, Pakistan
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
     <div class="app-container">
         <div id="loader" class="loader-container">
             <div class="spinner"></div>
-            <p>Fetching real-time Sadiqabad predictions from Hopsworks...</p>
+            <p>Fetching real-time Sadiqabad predictions...</p>
         </div>
 
         <main id="dashboard" class="hidden">
@@ -42,23 +42,18 @@
             <!-- Tab Navigation -->
             <nav class="tab-nav" id="tabNav">
                 <button class="tab-btn active" data-tab="forecast" id="tabBtnForecast">
-                    <span class="tab-icon">📊</span>
                     <span class="tab-label">Live AQI & Forecast</span>
                 </button>
                 <button class="tab-btn" data-tab="models" id="tabBtnModels">
-                    <span class="tab-icon">🧠</span>
                     <span class="tab-label">Model Details</span>
                 </button>
                 <button class="tab-btn" data-tab="shap" id="tabBtnShap">
-                    <span class="tab-icon">🔍</span>
                     <span class="tab-label">SHAP Analysis</span>
                 </button>
                 <button class="tab-btn" data-tab="data" id="tabBtnData">
-                    <span class="tab-icon">📁</span>
                     <span class="tab-label">Data & Features</span>
                 </button>
                 <button class="tab-btn" data-tab="architecture" id="tabBtnArchitecture">
-                    <span class="tab-icon">⚙️</span>
                     <span class="tab-label">Architecture</span>
                 </button>
             </nav>
@@ -66,21 +61,32 @@
             <!-- ============ TAB 1: LIVE AQI & FORECAST ============ -->
             <section class="tab-panel active" id="panelForecast">
                 <div class="current-status-section">
-                    <div class="status-card" id="currentAqiCard">
+                    <div class="status-card skeuo-panel" id="currentAqiCard">
                         <div class="status-header">
-                            <h3>📍 Sadiqabad Live AQI Reading</h3>
+                            <h3>Sadiqabad Live AQI Reading</h3>
                             <span class="date-label" id="currentDateLabel">--</span>
                         </div>
                         <div class="aqi-display">
-                            <span class="aqi-value" id="currentAqiValue">--</span>
-                            <span class="aqi-category" id="currentAqiCategory">Loading...</span>
+                            <span class="aqi-value inset-text" id="currentAqiValue">--</span>
+                            <span class="aqi-category skeuo-btn" id="currentAqiCategory">Loading...</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- AI Insights Card (LLM) -->
+                <div class="ai-insights-card skeuo-panel hidden" id="aiInsightsCard">
+                    <div class="insights-header">
+                        <h4>AI Expert Analysis</h4>
+                        <span class="model-badge skeuo-inset">Powered by Mistral-7B LLM</span>
+                    </div>
+                    <div class="insights-content inset-box">
+                        <p id="aiInsightsText">Loading AI insights...</p>
+                    </div>
+                </div>
+
                 <!-- AQI Health Guidance -->
-                <div class="health-guidance-card" id="healthGuidanceCard">
-                    <div class="guidance-icon" id="guidanceIcon">💚</div>
+                <div class="health-guidance-card skeuo-panel" id="healthGuidanceCard">
+                    <div class="guidance-icon skeuo-circle" id="guidanceIcon"></div>
                     <div class="guidance-content">
                         <h4 id="guidanceTitle">Health Guidance</h4>
                         <p id="guidanceText">Loading health advisory...</p>
@@ -94,42 +100,42 @@
                         <p>Machine learning predictions for the next 72 hours of air quality.</p>
                     </div>
                     <div class="grid grid-3">
-                        <div class="forecast-card" id="day1Card">
+                        <div class="forecast-card skeuo-panel" id="day1Card">
                             <h4>Tomorrow</h4>
-                            <div class="forecast-value" id="day1Value">--</div>
-                            <div class="forecast-category" id="day1Category">--</div>
+                            <div class="forecast-value inset-text" id="day1Value">--</div>
+                            <div class="forecast-category skeuo-inset" id="day1Category">--</div>
                             <div class="forecast-confidence" id="day1Confidence"></div>
                         </div>
-                        <div class="forecast-card" id="day2Card">
+                        <div class="forecast-card skeuo-panel" id="day2Card">
                             <h4>2-Day Outlook</h4>
-                            <div class="forecast-value" id="day2Value">--</div>
-                            <div class="forecast-category" id="day2Category">--</div>
+                            <div class="forecast-value inset-text" id="day2Value">--</div>
+                            <div class="forecast-category skeuo-inset" id="day2Category">--</div>
                             <div class="forecast-confidence" id="day2Confidence"></div>
                         </div>
-                        <div class="forecast-card" id="day3Card">
+                        <div class="forecast-card skeuo-panel" id="day3Card">
                             <h4>3-Day Outlook</h4>
-                            <div class="forecast-value" id="day3Value">--</div>
-                            <div class="forecast-category" id="day3Category">--</div>
+                            <div class="forecast-value inset-text" id="day3Value">--</div>
+                            <div class="forecast-category skeuo-inset" id="day3Category">--</div>
                             <div class="forecast-confidence" id="day3Confidence"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Extended Historical Trend Chart -->
-                <div class="chart-section">
+                <div class="chart-section skeuo-panel">
                     <div class="section-title">
                         <h2>Extended AQI Trend</h2>
                         <p>Air quality trend over recent readings with forecast overlay.</p>
                     </div>
-                    <div class="chart-wrapper chart-tall">
+                    <div class="chart-wrapper chart-tall inset-box">
                         <canvas id="aqiChart"></canvas>
                     </div>
                 </div>
 
                 <!-- AQI Scale Reference -->
-                <div class="aqi-scale-card">
-                    <h3>📏 US EPA AQI Scale Reference</h3>
-                    <div class="aqi-scale-bar">
+                <div class="aqi-scale-card skeuo-panel">
+                    <h3>US EPA AQI Scale Reference</h3>
+                    <div class="aqi-scale-bar skeuo-inset">
                         <div class="scale-segment scale-good"><span>Good</span><span>0-50</span></div>
                         <div class="scale-segment scale-moderate"><span>Moderate</span><span>51-100</span></div>
                         <div class="scale-segment scale-sensitive"><span>USG</span><span>101-150</span></div>
@@ -137,7 +143,7 @@
                         <div class="scale-segment scale-very-unhealthy"><span>Very Unhealthy</span><span>201-300</span></div>
                         <div class="scale-segment scale-hazardous"><span>Hazardous</span><span>301-500</span></div>
                     </div>
-                    <p class="scale-note">⚠️ <em>These are AI-generated estimations. They should not supersede official government health warnings in extreme scenarios.</em></p>
+                    <p class="scale-note"><em>This is Locally provided.</em></p>
                 </div>
             </section>
 
@@ -149,17 +155,17 @@
                 </div>
 
                 <!-- Training Configuration -->
-                <div class="training-config-card">
-                    <h3>⚙️ Training Pipeline Configuration</h3>
+                <div class="training-config-card skeuo-panel-dark">
+                    <h3>Training Pipeline Configuration</h3>
                     <div class="config-grid">
-                        <div class="config-item"><span class="config-label">Preprocessing</span><span class="config-value">StandardScaler (zero-mean, unit-variance)</span></div>
-                        <div class="config-item"><span class="config-label">Train/Test Split</span><span class="config-value">80% / 20% (temporal, no shuffle)</span></div>
-                        <div class="config-item"><span class="config-label">Models Compared</span><span class="config-value">RandomForestRegressor vs Ridge Regression</span></div>
-                        <div class="config-item"><span class="config-label">Selection Criterion</span><span class="config-value">Best R² Score on test set</span></div>
-                        <div class="config-item"><span class="config-label">Target Variable</span><span class="config-value">AQI shifted -24h / -48h / -72h</span></div>
-                        <div class="config-item"><span class="config-label">AQI Scale</span><span class="config-value">US EPA (0-500)</span></div>
-                        <div class="config-item"><span class="config-label">Feature Store</span><span class="config-value">Hopsworks (online_enabled=False, HUDI)</span></div>
-                        <div class="config-item"><span class="config-label">Model Registry</span><span class="config-value">Hopsworks Model Registry</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Preprocessing</span><span class="config-value">StandardScaler (zero-mean, unit-variance)</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Train/Test Split</span><span class="config-value">80% / 20% (temporal)</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Models Compared</span><span class="config-value">RandomForestRegressor vs Ridge Regression</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Selection Criterion</span><span class="config-value">Best R² Score on test set</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Target Variable</span><span class="config-value">AQI shifted -24h / -48h / -72h</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">AQI Scale</span><span class="config-value">US EPA (0-500)</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Feature Store</span><span class="config-value">Hopsworks (offline HUDI)</span></div>
+                        <div class="config-item skeuo-inset-dark"><span class="config-label">Model Registry</span><span class="config-value">Hopsworks Model Registry</span></div>
                     </div>
                 </div>
 
@@ -172,9 +178,9 @@
                     <p>Comparing model predictions against actual AQI values on the test set.</p>
                 </div>
                 <div class="grid grid-3" id="actualVsPredGrid">
-                    <div class="chart-section compact"><div class="chart-wrapper chart-medium"><canvas id="avpChart1d"></canvas></div></div>
-                    <div class="chart-section compact"><div class="chart-wrapper chart-medium"><canvas id="avpChart2d"></canvas></div></div>
-                    <div class="chart-section compact"><div class="chart-wrapper chart-medium"><canvas id="avpChart3d"></canvas></div></div>
+                    <div class="chart-section compact skeuo-panel"><div class="chart-wrapper chart-medium inset-box"><canvas id="avpChart1d"></canvas></div></div>
+                    <div class="chart-section compact skeuo-panel"><div class="chart-wrapper chart-medium inset-box"><canvas id="avpChart2d"></canvas></div></div>
+                    <div class="chart-section compact skeuo-panel"><div class="chart-wrapper chart-medium inset-box"><canvas id="avpChart3d"></canvas></div></div>
                 </div>
 
                 <!-- Residual Analysis -->
@@ -184,23 +190,23 @@
                 </div>
                 <div class="residual-stats-grid" id="residualStatsGrid"></div>
                 <div class="grid grid-3" id="residualChartGrid">
-                    <div class="chart-section compact"><div class="chart-wrapper chart-medium"><canvas id="residualChart1d"></canvas></div></div>
-                    <div class="chart-section compact"><div class="chart-wrapper chart-medium"><canvas id="residualChart2d"></canvas></div></div>
-                    <div class="chart-section compact"><div class="chart-wrapper chart-medium"><canvas id="residualChart3d"></canvas></div></div>
+                    <div class="chart-section compact skeuo-panel"><div class="chart-wrapper chart-medium inset-box"><canvas id="residualChart1d"></canvas></div></div>
+                    <div class="chart-section compact skeuo-panel"><div class="chart-wrapper chart-medium inset-box"><canvas id="residualChart2d"></canvas></div></div>
+                    <div class="chart-section compact skeuo-panel"><div class="chart-wrapper chart-medium inset-box"><canvas id="residualChart3d"></canvas></div></div>
                 </div>
 
                 <!-- Feature List -->
-                <div class="feature-list-card">
-                    <h3>📋 Feature Columns Used (<span id="featureCount">0</span> features)</h3>
+                <div class="feature-list-card skeuo-panel" style="margin-top:1.5rem;">
+                    <h3>Feature Columns Used (<span id="featureCount">0</span> features)</h3>
                     <p class="feature-list-subtitle">Input features fed to all models after StandardScaler normalization.</p>
                     <div class="feature-chips" id="featureChips"></div>
                 </div>
 
                 <!-- Scaler Details -->
-                <div class="scaler-details-card" id="scalerDetailsCard" style="margin-top:1.5rem;">
-                    <h3>📐 Scaler Parameters (StandardScaler)</h3>
+                <div class="scaler-details-card skeuo-panel" id="scalerDetailsCard" style="margin-top:1.5rem;">
+                    <h3>Scaler Parameters (StandardScaler)</h3>
                     <p class="feature-list-subtitle">Mean and standard deviation used for each feature normalization.</p>
-                    <div class="scaler-table-wrapper">
+                    <div class="scaler-table-wrapper inset-box">
                         <table class="data-table" id="scalerTable">
                             <thead><tr><th>Feature</th><th>Mean (μ)</th><th>Scale (σ)</th></tr></thead>
                             <tbody></tbody>
@@ -217,23 +223,23 @@
                 </div>
 
                 <!-- Global Feature Importance -->
-                <div class="shap-card">
+                <div class="shap-card skeuo-panel">
                     <div class="shap-card-header">
-                        <h3>🌍 Global Feature Importance (Mean |SHAP|)</h3>
+                        <h3>Global Feature Importance (Mean |SHAP|)</h3>
                         <p>Which features matter most across the entire dataset for predicting AQI.</p>
                     </div>
-                    <div class="shap-chart-wrapper">
+                    <div class="shap-chart-wrapper inset-box">
                         <canvas id="shapGlobalChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Feature Correlation with AQI -->
-                <div class="shap-card">
+                <div class="shap-card skeuo-panel">
                     <div class="shap-card-header">
-                        <h3>📊 Feature Correlation with AQI</h3>
+                        <h3>Feature Correlation with AQI</h3>
                         <p>Pearson correlation coefficient between each feature and the AQI target. Positive = increases with AQI, Negative = decreases.</p>
                     </div>
-                    <div class="shap-chart-wrapper">
+                    <div class="shap-chart-wrapper inset-box">
                         <canvas id="correlationChart"></canvas>
                     </div>
                 </div>
@@ -241,33 +247,33 @@
                 <!-- Per-prediction SHAP waterfall charts -->
                 <div class="section-title" style="margin-top:2rem;">
                     <h2>Per-Prediction SHAP Breakdown</h2>
-                    <p>Feature contributions pushing predicted AQI up (🔴 red) or down (🔵 blue) from the base value for each forecast horizon.</p>
+                    <p>Feature contributions pushing predicted AQI up or down from the base value for each forecast horizon.</p>
                 </div>
                 <div class="shap-waterfall-grid">
-                    <div class="shap-card">
-                        <div class="shap-card-header"><h3>📈 1-Day Forecast Breakdown</h3></div>
+                    <div class="shap-card skeuo-panel">
+                        <div class="shap-card-header"><h3>1-Day Forecast Breakdown</h3></div>
                         <div class="shap-meta" id="shapMeta1d"></div>
-                        <div class="shap-chart-wrapper"><canvas id="shapWaterfall1d"></canvas></div>
+                        <div class="shap-chart-wrapper inset-box"><canvas id="shapWaterfall1d"></canvas></div>
                     </div>
-                    <div class="shap-card">
-                        <div class="shap-card-header"><h3>📈 2-Day Forecast Breakdown</h3></div>
+                    <div class="shap-card skeuo-panel">
+                        <div class="shap-card-header"><h3>2-Day Forecast Breakdown</h3></div>
                         <div class="shap-meta" id="shapMeta2d"></div>
-                        <div class="shap-chart-wrapper"><canvas id="shapWaterfall2d"></canvas></div>
+                        <div class="shap-chart-wrapper inset-box"><canvas id="shapWaterfall2d"></canvas></div>
                     </div>
-                    <div class="shap-card">
-                        <div class="shap-card-header"><h3>📈 3-Day Forecast Breakdown</h3></div>
+                    <div class="shap-card skeuo-panel">
+                        <div class="shap-card-header"><h3>3-Day Forecast Breakdown</h3></div>
                         <div class="shap-meta" id="shapMeta3d"></div>
-                        <div class="shap-chart-wrapper"><canvas id="shapWaterfall3d"></canvas></div>
+                        <div class="shap-chart-wrapper inset-box"><canvas id="shapWaterfall3d"></canvas></div>
                     </div>
                 </div>
 
                 <!-- Latest Feature Values used in prediction -->
-                <div class="shap-card" style="margin-top:1.5rem;">
+                <div class="shap-card skeuo-panel" style="margin-top:1.5rem;">
                     <div class="shap-card-header">
-                        <h3>🔢 Latest Feature Values (Input to Model)</h3>
+                        <h3>Latest Feature Values (Input to Model)</h3>
                         <p>The actual feature values from the most recent data point that were fed into the model for prediction.</p>
                     </div>
-                    <div class="scaler-table-wrapper">
+                    <div class="scaler-table-wrapper inset-box">
                         <table class="data-table" id="latestFeaturesTable">
                             <thead><tr><th>Feature</th><th>Raw Value</th><th>SHAP (1d)</th><th>SHAP (2d)</th><th>SHAP (3d)</th></tr></thead>
                             <tbody></tbody>
@@ -276,23 +282,23 @@
                 </div>
 
                 <!-- SHAP Explainer -->
-                <div class="shap-explainer-card">
-                    <h3>📖 How to Read SHAP Charts</h3>
+                <div class="shap-explainer-card skeuo-panel-dark">
+                    <h3>How to Read SHAP Charts</h3>
                     <div class="explainer-grid">
-                        <div class="explainer-item">
-                            <div class="explainer-icon">🔴</div>
+                        <div class="explainer-item skeuo-inset-dark">
+                            <div class="explainer-icon color-dot-red"></div>
                             <div><strong>Positive SHAP Value</strong><p>This feature <em>increases</em> the predicted AQI — pushes toward higher pollution.</p></div>
                         </div>
-                        <div class="explainer-item">
-                            <div class="explainer-icon">🔵</div>
+                        <div class="explainer-item skeuo-inset-dark">
+                            <div class="explainer-icon color-dot-blue"></div>
                             <div><strong>Negative SHAP Value</strong><p>This feature <em>decreases</em> the predicted AQI — pushes toward cleaner air.</p></div>
                         </div>
-                        <div class="explainer-item">
-                            <div class="explainer-icon">📊</div>
+                        <div class="explainer-item skeuo-inset-dark">
+                            <div class="explainer-icon color-dot-gray"></div>
                             <div><strong>Base Value</strong><p>The model's average prediction across all training data. SHAP values add/subtract from this base.</p></div>
                         </div>
-                        <div class="explainer-item">
-                            <div class="explainer-icon">🌍</div>
+                        <div class="explainer-item skeuo-inset-dark">
+                            <div class="explainer-icon color-dot-green"></div>
                             <div><strong>Global Importance</strong><p>Mean absolute SHAP value across the entire dataset. Higher = more influential feature overall.</p></div>
                         </div>
                     </div>
@@ -310,43 +316,43 @@
                 <div class="stats-grid" id="datasetStatsGrid"></div>
 
                 <!-- AQI Distribution Chart -->
-                <div class="chart-section" style="margin-top:2rem;">
+                <div class="chart-section skeuo-panel" style="margin-top:2rem;">
                     <div class="section-title">
                         <h2>AQI Category Distribution</h2>
                         <p>How the historical AQI readings are distributed across EPA categories in the training data.</p>
                     </div>
-                    <div class="chart-wrapper chart-medium">
+                    <div class="chart-wrapper chart-medium inset-box">
                         <canvas id="aqiDistChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Data Sources -->
-                <div class="data-sources-card" style="margin-top:2rem;">
-                    <h3>🌐 Data Sources & APIs</h3>
+                <div class="data-sources-card skeuo-panel" style="margin-top:2rem;">
+                    <h3>Data Sources & APIs</h3>
                     <div class="grid grid-2" id="dataSourcesGrid"></div>
                 </div>
 
                 <!-- Pollutants Tracked -->
-                <div class="pollutants-card" style="margin-top:1.5rem;">
-                    <h3>🧪 Pollutants Tracked</h3>
+                <div class="pollutants-card skeuo-panel" style="margin-top:1.5rem;">
+                    <h3>Pollutants Tracked</h3>
                     <p class="feature-list-subtitle">Raw pollutant concentrations (µg/m³) from the OpenWeather Air Pollution API, converted to US EPA AQI using official breakpoint tables.</p>
                     <div class="pollutant-chips" id="pollutantChips"></div>
                 </div>
 
                 <!-- Feature Engineering Details -->
-                <div class="feature-eng-card" style="margin-top:1.5rem;">
-                    <h3>🔧 Feature Engineering Pipeline</h3>
+                <div class="feature-eng-card skeuo-panel" style="margin-top:1.5rem;">
+                    <h3>Feature Engineering Pipeline</h3>
                     <p class="feature-list-subtitle">Derived features computed from raw data before model training.</p>
                     <div class="feature-eng-list" id="featureEngList"></div>
                 </div>
 
                 <!-- Feature Statistics Table -->
-                <div class="shap-card" style="margin-top:1.5rem;">
+                <div class="shap-card skeuo-panel" style="margin-top:1.5rem;">
                     <div class="shap-card-header">
-                        <h3>📊 Feature Statistics (Training Data)</h3>
+                        <h3>Feature Statistics (Training Data)</h3>
                         <p>Statistical summary of all features in the training dataset.</p>
                     </div>
-                    <div class="scaler-table-wrapper">
+                    <div class="scaler-table-wrapper inset-box">
                         <table class="data-table" id="featureStatsTable">
                             <thead><tr><th>Feature</th><th>Mean</th><th>Std Dev</th><th>Min</th><th>Max</th></tr></thead>
                             <tbody></tbody>
@@ -355,21 +361,21 @@
                 </div>
 
                 <!-- Missing Values -->
-                <div class="shap-card" style="margin-top:1.5rem;" id="missingValuesCard">
+                <div class="shap-card skeuo-panel" style="margin-top:1.5rem;" id="missingValuesCard">
                     <div class="shap-card-header">
-                        <h3>⚠️ Missing Values Report</h3>
+                        <h3>Missing Values Report</h3>
                         <p>Columns with missing/NaN values in the dataset.</p>
                     </div>
-                    <div id="missingValuesContent"></div>
+                    <div id="missingValuesContent" class="inset-box" style="padding:1rem;"></div>
                 </div>
             </section>
 
             <!-- ============ TAB 5: ARCHITECTURE ============ -->
             <section class="tab-panel" id="panelArchitecture">
-                <div class="hero-section">
+                <div class="hero-section skeuo-panel-dark">
                     <div class="hero-content">
-                        <span class="hero-subheading">End-to-End MLOps System</span>
-                        <h2>Enterprise-Grade Serverless Intelligence for Sadiqabad</h2>
+                        <span class="hero-subheading skeuo-inset-dark">End-to-End MLOps System</span>
+                        <h2>Enterprise-Grade Serverless Intelligence</h2>
                         <p class="hero-description">
                             A fully autonomous, 100% serverless ML system that continuously ingests real-time environmental data, engineers features, trains regression models, computes SHAP explainability, and publishes dependable 3-day AQI forecasts — all without managing a single server.
                         </p>
@@ -377,23 +383,23 @@
                 </div>
 
                 <!-- Tech Stack -->
-                <div class="section-title">
+                <div class="section-title" style="margin-top:2.5rem;">
                     <h2>Technology Stack</h2>
                     <p>All technologies and services powering the Pearls AQI Predictor system.</p>
                 </div>
                 <div class="tech-stack-grid">
-                    <div class="tech-card"><div class="tech-icon">🐍</div><h4>Python 3.10</h4><p>Core language for data science, ML, and backend</p></div>
-                    <div class="tech-card"><div class="tech-icon">🧠</div><h4>Scikit-Learn</h4><p>RandomForest, Ridge, StandardScaler, train/test split</p></div>
-                    <div class="tech-card"><div class="tech-icon">🔍</div><h4>SHAP</h4><p>TreeExplainer, LinearExplainer for model explainability</p></div>
-                    <div class="tech-card"><div class="tech-icon">📦</div><h4>Hopsworks</h4><p>Feature Store & Model Registry (serverless)</p></div>
-                    <div class="tech-card"><div class="tech-icon">⚡</div><h4>GitHub Actions</h4><p>CI/CD — hourly features, daily training, auto-deploy</p></div>
-                    <div class="tech-card"><div class="tech-icon">🌐</div><h4>GitHub Pages</h4><p>Static hosting for this dashboard (zero-cost)</p></div>
-                    <div class="tech-card"><div class="tech-icon">🌤️</div><h4>OpenWeather API</h4><p>Air pollution data (PM2.5, PM10, O3, NO2, SO2, CO)</p></div>
-                    <div class="tech-card"><div class="tech-icon">🌡️</div><h4>Open-Meteo API</h4><p>Historical & recent weather (temp, humidity, wind)</p></div>
-                    <div class="tech-card"><div class="tech-icon">📊</div><h4>Chart.js</h4><p>Interactive charts for trends, SHAP, and analysis</p></div>
-                    <div class="tech-card"><div class="tech-icon">🎨</div><h4>Vanilla HTML/CSS/JS</h4><p>Lightweight, no-framework frontend dashboard</p></div>
-                    <div class="tech-card"><div class="tech-icon">📋</div><h4>Pandas / NumPy</h4><p>Data manipulation, feature engineering, statistics</p></div>
-                    <div class="tech-card"><div class="tech-icon">🔐</div><h4>dotenv / Secrets</h4><p>Environment variables for API keys (never hardcoded)</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Python 3.10</h4><p>Core language for data science, ML, and backend</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Scikit-Learn</h4><p>RandomForest, Ridge, StandardScaler, train/test split</p></div>
+                    <div class="tech-card skeuo-panel"><h4>SHAP</h4><p>TreeExplainer, LinearExplainer for model explainability</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Hopsworks</h4><p>Feature Store & Model Registry (serverless)</p></div>
+                    <div class="tech-card skeuo-panel"><h4>GitHub Actions</h4><p>CI/CD — hourly features, daily training, auto-deploy</p></div>
+                    <div class="tech-card skeuo-panel"><h4>GitHub Pages</h4><p>Static hosting for this dashboard (zero-cost)</p></div>
+                    <div class="tech-card skeuo-panel"><h4>OpenWeather API</h4><p>Air pollution data (PM2.5, PM10, O3, NO2, SO2, CO)</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Open-Meteo API</h4><p>Historical & recent weather (temp, humidity, wind)</p></div>
+                    <div class="tech-card skeuo-panel"><h4>HuggingFace LLM</h4><p>Serverless Inference API (Mistral-7B) for insights</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Chart.js</h4><p>Interactive charts for trends, SHAP, and analysis</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Pandas / NumPy</h4><p>Data manipulation, feature engineering, statistics</p></div>
+                    <div class="tech-card skeuo-panel"><h4>Skeuomorphism</h4><p>Custom HTML/CSS dashboard with 3D tactile feel</p></div>
                 </div>
 
                 <!-- Architecture Diagram -->
@@ -402,64 +408,66 @@
                     <p>Three independent pipelines connected through a central Feature Store and Model Registry.</p>
                 </div>
                 <div class="architecture-grid">
-                    <div class="arch-box">
-                        <h4>⚙️ Feature Pipeline (Hourly)</h4>
+                    <div class="arch-box skeuo-panel">
+                        <h4>Feature Pipeline (Hourly)</h4>
                         <p>Fetches raw pollution data from OpenWeather and weather from Open-Meteo, computes temporal features (hour, day_of_week, month), derived features (aqi_change_rate, aqi_rolling_24h), and pushes to Hopsworks Feature Store.</p>
-                        <div class="arch-flow">
-                            <div class="flow-node flow-source">APIs</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-node flow-process">Feature Engine</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-node flow-store">Feature Store</div>
+                        <div class="arch-flow skeuo-inset">
+                            <div class="flow-node flow-source skeuo-btn">APIs</div>
+                            <div class="flow-arrow">></div>
+                            <div class="flow-node flow-process skeuo-btn">Feature Engine</div>
+                            <div class="flow-arrow">></div>
+                            <div class="flow-node flow-store skeuo-btn">Feature Store</div>
                         </div>
                     </div>
-                    <div class="arch-box">
-                        <h4>🧠 Training Pipeline (Daily)</h4>
+                    <div class="arch-box skeuo-panel">
+                        <h4>Training Pipeline (Daily)</h4>
                         <p>Pulls historical features + targets from Hopsworks, fits StandardScaler, trains RandomForest & Ridge Regression, selects best by R², and uploads winner to Model Registry with SHAP metadata.</p>
-                        <div class="arch-flow">
-                            <div class="flow-node flow-store">Feature Store</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-node flow-process">Train & Evaluate</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-node flow-store">Model Registry</div>
+                        <div class="arch-flow skeuo-inset">
+                            <div class="flow-node flow-store skeuo-btn">Feature Store</div>
+                            <div class="flow-arrow">></div>
+                            <div class="flow-node flow-process skeuo-btn">Train & Evaluate</div>
+                            <div class="flow-arrow">></div>
+                            <div class="flow-node flow-store skeuo-btn">Model Registry</div>
                         </div>
                     </div>
-                    <div class="arch-box">
-                        <h4>📊 Inference Pipeline (Hourly)</h4>
-                        <p>Downloads latest model + scaler from registry, fetches latest features, generates predictions, computes SHAP values, dataset statistics, residual analysis, and writes enriched predictions.json for the dashboard.</p>
-                        <div class="arch-flow">
-                            <div class="flow-node flow-store">Registry</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-node flow-process">Predict + SHAP</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-node flow-source">Dashboard</div>
+                    <div class="arch-box skeuo-panel">
+                        <h4>Inference Pipeline (Hourly)</h4>
+                        <p>Downloads latest model + scaler from registry, fetches latest features, generates predictions, computes SHAP values, queries HuggingFace LLM, and writes enriched predictions.json for the dashboard.</p>
+                        <div class="arch-flow skeuo-inset">
+                            <div class="flow-node flow-store skeuo-btn">Registry</div>
+                            <div class="flow-arrow">></div>
+                            <div class="flow-node flow-process skeuo-btn">Predict + LLM</div>
+                            <div class="flow-arrow">></div>
+                            <div class="flow-node flow-source skeuo-btn">Dashboard</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pipeline Schedule -->
-                <div class="pipeline-schedule-card" style="margin-top:2rem;">
-                    <h3>🕐 Automated Pipeline Schedule</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Pipeline</th><th>Trigger</th><th>Description</th><th>Key Scripts</th></tr></thead>
-                        <tbody>
-                            <tr><td><code>hourly-feature-pipeline</code></td><td><code>cron: 0 * * * *</code></td><td>Fetch data → engineer features → push to Hopsworks → regenerate predictions.json</td><td><code>hourly_update.py</code>, <code>generate_predictions.py</code></td></tr>
-                            <tr><td><code>daily-training-pipeline</code></td><td><code>cron: 0 2 * * *</code></td><td>Pull features → train RF + Ridge → evaluate → upload best model</td><td><code>train.py</code></td></tr>
-                            <tr><td><code>retrain-pipeline</code></td><td>Manual dispatch</td><td>Full backfill (365 days) → retrain all models → regenerate predictions</td><td><code>backfill.py</code>, <code>train.py</code>, <code>generate_predictions.py</code></td></tr>
-                            <tr><td><code>deploy-pages</code></td><td>On push to <code>main</code></td><td>Deploy dashboard to GitHub Pages</td><td><code>docs/*</code></td></tr>
-                        </tbody>
-                    </table>
+                <div class="pipeline-schedule-card skeuo-panel" style="margin-top:2rem;">
+                    <h3>Automated Pipeline Schedule</h3>
+                    <div class="inset-box" style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead><tr><th>Pipeline</th><th>Trigger</th><th>Description</th><th>Key Scripts</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>hourly-feature-pipeline</code></td><td><code>cron: 0 * * * *</code></td><td>Fetch data → engineer features → push to Hopsworks → predict → LLM call</td><td><code>hourly_update.py</code>, <code>generate_predictions.py</code></td></tr>
+                                <tr><td><code>daily-training-pipeline</code></td><td><code>cron: 0 2 * * *</code></td><td>Pull features → train RF + Ridge → evaluate → upload best model</td><td><code>train.py</code></td></tr>
+                                <tr><td><code>retrain-pipeline</code></td><td>Manual dispatch</td><td>Full backfill (365 days) → retrain all models → regenerate predictions</td><td><code>backfill.py</code>, <code>train.py</code>, <code>generate_predictions.py</code></td></tr>
+                                <tr><td><code>deploy-pages</code></td><td>On push to <code>main</code></td><td>Deploy dashboard to GitHub Pages</td><td><code>docs/*</code></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- File Structure -->
-                <div class="shap-card" style="margin-top:1.5rem;">
+                <div class="shap-card skeuo-panel" style="margin-top:1.5rem;">
                     <div class="shap-card-header">
-                        <h3>📂 Project Structure</h3>
+                        <h3>Project Structure</h3>
                         <p>Modular codebase — feature extraction, training, and inference are fully separated.</p>
                     </div>
-                    <pre class="code-block">Pearls_AQI_Prediction/
+                    <pre class="code-block inset-box">Pearls_AQI_Prediction/
 ├── .github/workflows/
-│   ├── hourly_feature_pipeline.yml    # Hourly: fetch data + generate predictions
+│   ├── hourly_feature_pipeline.yml    # Hourly: fetch data + generate predictions + LLM
 │   ├── daily_training_pipeline.yml    # Daily: retrain models
 │   ├── retrain_pipeline.yml           # Manual: full backfill + retrain
 │   └── deploy-pages.yml               # Auto-deploy dashboard
@@ -475,9 +483,9 @@
 │   │   ├── train.py                   # Model training (RF vs Ridge)
 │   │   └── evaluate.py                # Model evaluation metrics
 │   └── web_app/
-│       └── generate_predictions.py    # Inference + SHAP + statistics
+│       └── generate_predictions.py    # Inference + SHAP + LLM + statistics
 ├── docs/                              # Dashboard (GitHub Pages)
-│   ├── index.html                     # This dashboard
+│   ├── index.html                     # This dashboard (Skeuomorphic design)
 │   ├── style.css                      # Styles
 │   ├── script.js                      # Interactive logic
 │   └── predictions.json               # Auto-generated data
@@ -491,12 +499,12 @@
                 </div>
 
                 <!-- Engineered By -->
-                <div class="credits-card" style="margin-top:1.5rem;">
-                    <h3>👨‍💻 Project Credits</h3>
-                    <div class="credits-content">
+                <div class="credits-card skeuo-panel" style="margin-top:1.5rem;">
+                    <h3>Project Credits</h3>
+                    <div class="credits-content inset-box" style="padding:1.5rem;">
                         <div><strong>Engineer:</strong> Usman Sarwar</div>
                         <div><strong>Role:</strong> Machine Learning & Data Engineer</div>
-                        <div><strong>Stack:</strong> Python, Scikit-Learn, SHAP, Hopsworks, GitHub Actions, HTML/CSS/JS</div>
+                        <div><strong>Stack:</strong> Python, Scikit-Learn, SHAP, Hopsworks, Actions, HuggingFace LLM</div>
                         <div><strong>Target:</strong> Sadiqabad, Punjab, Pakistan</div>
                         <div><strong>AQI Standard:</strong> US EPA (0-500 scale) with official breakpoint tables</div>
                     </div>
@@ -506,7 +514,7 @@
         </main>
     </div>
 
-    <footer class="app-footer">
+    <footer class="app-footer skeuo-footer">
         <div class="footer-container">
             <div class="footer-branding">
                 <p class="author-credit">Engineered by <strong class="author-name">Usman Sarwar</strong></p>
@@ -518,6 +526,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=12"></script>
+    <script src="script.js?v=13"></script>
 </body>
 </html>
