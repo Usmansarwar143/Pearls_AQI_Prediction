@@ -534,6 +534,8 @@ def generate_predictions():
     
     if hf_api_key:
         print("Calling HuggingFace LLM for AI Insights...")
+        
+        current_aqi = float(latest_row['aqi'].values[0])
         prompt = f"<|system|>\nYou are an expert meteorologist analyzing air quality for Sadiqabad, Pakistan. Do not use markdown or bullet points. Keep it strictly to 2-3 short sentences.</s>\n<|user|>\nThe current AQI is {current_aqi:.1f}. The 1-day forecast is {preds['1_day']:.1f}, 2-day is {preds['2_days']:.1f}, 3-day is {preds['3_days']:.1f}. Provide a concise plain-English health advisory and forecast summary.</s>\n<|assistant|>\n"
         headers = {"Authorization": f"Bearer {hf_api_key}", "Content-Type": "application/json"}
         payload = {
