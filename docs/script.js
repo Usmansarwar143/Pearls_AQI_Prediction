@@ -215,29 +215,32 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!info) return;
 
             const card = document.createElement('div');
-            card.className = 'model-card';
+            card.className = 'model-card skeuo-panel';
 
             let metricsHTML = '';
             if (metrics) {
                 const r2Class = metrics.r2 >= 0.8 ? 'good' : metrics.r2 >= 0.5 ? 'warning' : 'bad';
                 metricsHTML = `
-                    <div class="metric-row"><span class="metric-label">R² Score</span><span class="metric-value ${r2Class}">${metrics.r2.toFixed(4)}</span></div>
-                    <div class="metric-row"><span class="metric-label">RMSE</span><span class="metric-value">${metrics.rmse.toFixed(4)}</span></div>
-                    <div class="metric-row"><span class="metric-label">MAE</span><span class="metric-value">${metrics.mae.toFixed(4)}</span></div>
-                    <div class="metric-row"><span class="metric-label">Train Samples</span><span class="metric-value">${metrics.train_samples || '—'}</span></div>
-                    <div class="metric-row"><span class="metric-label">Test Samples</span><span class="metric-value">${metrics.test_samples}</span></div>`;
+                    <div class="metric-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span class="metric-label">R² Score</span><span class="metric-value ${r2Class}">${metrics.r2.toFixed(4)}</span></div>
+                    <div class="metric-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span class="metric-label">RMSE</span><span class="metric-value">${metrics.rmse.toFixed(4)}</span></div>
+                    <div class="metric-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span class="metric-label">MAE</span><span class="metric-value">${metrics.mae.toFixed(4)}</span></div>
+                    <div class="metric-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span class="metric-label">Train Samples</span><span class="metric-value">${metrics.train_samples || '—'}</span></div>
+                    <div class="metric-row skeuo-inset" style="margin-bottom:0.5rem;display:flex;justify-content:space-between;"><span class="metric-label">Test Samples</span><span class="metric-value">${metrics.test_samples}</span></div>`;
             } else {
                 metricsHTML = '<p style="color:#64748B;font-size:0.82rem;padding:0.4rem 0;">Metrics not yet available.</p>';
             }
 
             let paramsHTML = '';
             if (info.parameters && Object.keys(info.parameters).length > 0) {
-                const chips = Object.entries(info.parameters).map(([k, v]) => `<span class="param-chip">${k}: ${v}</span>`).join('');
-                paramsHTML = `<div class="params-section"><h5>Hyperparameters</h5><div>${chips}</div></div>`;
+                const chips = Object.entries(info.parameters).map(([k, v]) => `<span class="param-chip skeuo-btn" style="margin:0.2rem;font-size:0.7rem;padding:0.2rem 0.5rem;">${k}: ${v}</span>`).join('');
+                paramsHTML = `<div class="params-section" style="margin-top:1rem;"><h5>Hyperparameters</h5><div>${chips}</div></div>`;
             }
 
             card.innerHTML = `
-                <div class="model-card-header"><h4>${label}</h4><span class="model-type-badge">${info.model_type} v${info.version}</span></div>
+                <div class="model-card-header" style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
+                    <h4 style="margin:0;">${label}</h4>
+                    <span class="model-type-badge skeuo-inset" style="font-size:0.7rem;padding:0.2rem 0.6rem;">${info.model_type} v${info.version}</span>
+                </div>
                 <div class="model-card-body">${metricsHTML}${paramsHTML}</div>`;
             grid.appendChild(card);
         });
@@ -528,14 +531,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const ds = data.dataset_statistics;
             const aqiStats = ds.aqi_statistics || {};
             statsGrid.innerHTML = `
-                <div class="stat-card"><div class="stat-value">${ds.total_rows?.toLocaleString() || '—'}</div><div class="stat-label">Total Data Points</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.mean || '—'}</div><div class="stat-label">Mean AQI</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.median || '—'}</div><div class="stat-label">Median AQI</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.std || '—'}</div><div class="stat-label">Std Dev</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.min || '—'}</div><div class="stat-label">Min AQI</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.max || '—'}</div><div class="stat-label">Max AQI</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.q25 || '—'}</div><div class="stat-label">25th Percentile</div></div>
-                <div class="stat-card"><div class="stat-value">${aqiStats.q75 || '—'}</div><div class="stat-label">75th Percentile</div></div>`;
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${ds.total_rows?.toLocaleString() || '—'}</div><div class="stat-label">Total Data Points</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.mean || '—'}</div><div class="stat-label">Mean AQI</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.median || '—'}</div><div class="stat-label">Median AQI</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.std || '—'}</div><div class="stat-label">Std Dev</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.min || '—'}</div><div class="stat-label">Min AQI</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.max || '—'}</div><div class="stat-label">Max AQI</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.q25 || '—'}</div><div class="stat-label">25th Percentile</div></div>
+                <div class="stat-card skeuo-inset" style="text-align:center;padding:1rem;"><div class="stat-value">${aqiStats.q75 || '—'}</div><div class="stat-label">75th Percentile</div></div>`;
 
             // AQI distribution chart
             if (ds.aqi_distribution) renderAqiDistribution(ds.aqi_distribution);
@@ -545,14 +548,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const sourcesGrid = document.getElementById('dataSourcesGrid');
         if (data.pipeline_info?.data_source) {
             sourcesGrid.innerHTML = `
-                <div class="data-source-item"><h4>🏭 Air Pollution Data</h4><p><strong>Source:</strong> ${data.pipeline_info.data_source.pollution}<br><strong>Endpoint:</strong> /data/2.5/air_pollution/history<br><strong>Pollutants:</strong> PM2.5, PM10, O3, NO2, SO2, CO, NO, NH3<br><strong>AQI Conversion:</strong> US EPA breakpoint tables (epa_aqi.py)</p></div>
-                <div class="data-source-item"><h4>🌤️ Weather Data</h4><p><strong>Source:</strong> ${data.pipeline_info.data_source.weather}<br><strong>Features:</strong> Temperature (°C), Relative Humidity (%), Wind Speed (km/h)<br><strong>Coverage:</strong> Archive API + Forecast API (no lag)</p></div>`;
+                <div class="data-source-item skeuo-inset" style="padding:1rem;"><h4>Air Pollution Data</h4><p><strong>Source:</strong> ${data.pipeline_info.data_source.pollution}<br><strong>Endpoint:</strong> /data/2.5/air_pollution/history<br><strong>Pollutants:</strong> PM2.5, PM10, O3, NO2, SO2, CO, NO, NH3<br><strong>AQI Conversion:</strong> US EPA breakpoint tables (epa_aqi.py)</p></div>
+                <div class="data-source-item skeuo-inset" style="padding:1rem;"><h4>Weather Data</h4><p><strong>Source:</strong> ${data.pipeline_info.data_source.weather}<br><strong>Features:</strong> Temperature (°C), Relative Humidity (%), Wind Speed (km/h)<br><strong>Coverage:</strong> Archive API + Forecast API (no lag)</p></div>`;
         }
 
         // Pollutant chips
         const pollutantChips = document.getElementById('pollutantChips');
         if (data.pipeline_info?.pollutants_tracked) {
-            pollutantChips.innerHTML = data.pipeline_info.pollutants_tracked.map(p => `<div class="pollutant-chip">${p}</div>`).join('');
+            pollutantChips.innerHTML = data.pipeline_info.pollutants_tracked.map(p => `<div class="pollutant-chip skeuo-btn" style="padding:0.4rem 1rem;">${p}</div>`).join('');
         }
 
         // Feature engineering items
@@ -560,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.pipeline_info?.feature_engineering) {
             featureEngList.innerHTML = data.pipeline_info.feature_engineering.map(f => {
                 const [codePart, ...descParts] = f.split(' — ');
-                return `<div class="feature-eng-item"><code>${codePart}</code><span>— ${descParts.join(' — ')}</span></div>`;
+                return `<div class="feature-eng-item skeuo-inset" style="margin-bottom:0.8rem;"><code>${codePart}</code><span>— ${descParts.join(' — ')}</span></div>`;
             }).join('');
         }
 
@@ -586,7 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += '</div>';
             missingContent.innerHTML = html;
         } else {
-            missingContent.innerHTML = '<p style="color:#059669;font-weight:600;padding:0.5rem 0;">✅ No missing values detected in any column!</p>';
+            missingContent.innerHTML = '<p style="color:#27ae60;font-weight:600;padding:0.5rem 0;">No missing values detected in any column!</p>';
         }
     }
 
