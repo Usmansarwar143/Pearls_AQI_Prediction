@@ -534,31 +534,46 @@ def generate_predictions():
     
     if hf_api_key:
         print("Calling HuggingFace LLM for AI Insights...")
-        try:
-            prompt = f"[INST] Act as an expert meteorologist analyzing air quality for Sadiqabad, Pakistan. The current AQI is {current_aqi:.1f}. The 1-day forecast is {preds['1_day']:.1f}, 2-day is {preds['2_days']:.1f}, 3-day is {preds['3_days']:.1f}. Provide a concise, 2-3 sentence plain-English health advisory and forecast summary. Do not use markdown or bullet points. [/INST]"
-            headers = {"Authorization": f"Bearer {hf_api_key}", "Content-Type": "application/json"}
-            payload = {
-                "inputs": prompt,
-                "parameters": {"max_new_tokens": 150, "temperature": 0.7, "return_full_text": False}
-            }
-            response = requests.post(
-                "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", 
-                headers=headers, 
-                json=payload, 
-                timeout=20
-            )
-            if response.status_code == 200:
-                res_json = response.json()
-                if isinstance(res_json, list) and len(res_json) > 0 and 'generated_text' in res_json[0]:
-                    llm_insights = res_json[0]['generated_text'].strip()
-                    print("LLM Insights generated successfully.")
+        prompt = f"<|system|>\nYou are an expert meteorologist analyzing air quality for Sadiqabad, Pakistan. Do not use markdown or bullet points. Keep it strictly to 2-3 short sentences.</s>\n<|user|>\nThe current AQI is {current_aqi:.1f}. The 1-day forecast is {preds['1_day']:.1f}, 2-day is {preds['2_days']:.1f}, 3-day is {preds['3_days']:.1f}. Provide a concise plain-English health advisory and forecast summary.</s>\n<|assistant|>\n"
+        headers = {"Authorization": f"Bearer {hf_api_key}", "Content-Type": "application/json"}
+        payload = {
+            "inputs": prompt,
+            "parameters": {"max_new_tokens": 150, "temperature": 0.7, "return_full_text": False, "wait_for_model": True}
+        }
+        
+        import time
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                print(f"LLM Inference Attempt {attempt + 1}/{max_retries}...")
+                response = requests.post(
+                    "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta", 
+                    headers=headers, 
+                    json=payload, 
+                    timeout=30
+                )
+                if response.status_code == 200:
+                    res_json = response.json()
+                    if isinstance(res_json, list) and len(res_json) > 0 and 'generated_text' in res_json[0]:
+                        llm_insights = res_json[0]['generated_text'].strip()
+                        print("LLM Insights generated successfully.")
+                        break
+                    else:
+                        print(f"Unexpected LLM response format: {res_json}")
+                        break
+                elif response.status_code == 503:
+                    print(f"Model is loading (503). Retrying in 10 seconds...")
+                    time.sleep(10)
                 else:
-                    print(f"Unexpected LLM response format: {res_json}")
-            else:
-                print(f"LLM API error: {response.status_code} - {response.text}")
-        except Exception as e:
-            print(f"Failed to generate LLM insights: {e}")
-            
+                    print(f"LLM API error: {response.status_code} - {response.text}")
+                    break
+            except Exception as e:
+                print(f"Failed to generate LLM insights: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(5)
+                else:
+                    print("Max retries reached for LLM.")
+    
     output["data"]["llm_insights"] = llm_insights
     
     # Save to JSON

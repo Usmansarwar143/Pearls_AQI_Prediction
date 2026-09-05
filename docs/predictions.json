@@ -2,7 +2,7 @@
     "status": "success",
     "generated_at": "2026-09-05T08:31:34.873852+00:00",
     "generation_time_seconds": 106.77,
-    "data": {
+    "data": { "llm_insights": "The current AQI in Sadiqabad is 83.0 (Moderate). Sensitive groups should consider limiting prolonged outdoor exertion. Air quality is expected to slightly improve over the next 3 days.", 
         "current_aqi": 83.0,
         "current_date": "2026-09-05T08:00:00.000000",
         "history": [
