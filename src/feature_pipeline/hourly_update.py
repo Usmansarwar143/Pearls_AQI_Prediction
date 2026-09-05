@@ -41,9 +41,21 @@ def run_hourly_update(days_back=1):
     
     # Insert data (Hopsworks handles duplicates via primary key automatically)
     print("Inserting data into Hopsworks Feature Group...")
-    aqi_fg.insert(features_df, write_options={"wait_for_job": False})
-    
-    print("Hourly feature update successfully pushed to Hopsworks!")
+    import time
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            aqi_fg.insert(features_df, write_options={"wait_for_job": False})
+            print("Hourly feature update successfully pushed to Hopsworks!")
+            break
+        except Exception as e:
+            print(f"Error inserting data into Hopsworks (Attempt {attempt+1}/{max_retries}): {e}")
+            if attempt < max_retries - 1:
+                print("Retrying in 10 seconds...")
+                time.sleep(10)
+            else:
+                print("Failed to insert data after maximum retries.")
+                raise e
 
 if __name__ == "__main__":
     run_hourly_update(days_back=1)
