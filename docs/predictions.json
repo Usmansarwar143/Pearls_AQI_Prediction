@@ -1,7 +1,7 @@
 {
     "status": "success",
-    "generated_at": "2026-09-05T06:44:36.638005+00:00",
-    "generation_time_seconds": 60.5,
+    "generated_at": "2026-09-05T07:31:00.884719+00:00",
+    "generation_time_seconds": 82.9,
     "data": {
         "current_aqi": 79.0,
         "current_date": "2026-09-05T06:00:00.000000",
@@ -229,7 +229,7 @@
         "feature_correlations": null,
         "scaler_info": {
             "type": "StandardScaler",
-            "version": 20,
+            "version": 21,
             "n_features": 17,
             "means": {
                 "aqi": 140.1995,
@@ -273,7 +273,7 @@
         "model_info": {
             "1d": {
                 "model_type": "RandomForestRegressor",
-                "version": 20,
+                "version": 21,
                 "description": "Best model for target_aqi_next_1d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -288,7 +288,7 @@
             },
             "2d": {
                 "model_type": "RandomForestRegressor",
-                "version": 19,
+                "version": 20,
                 "description": "Best model for target_aqi_next_2d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -303,7 +303,7 @@
             },
             "3d": {
                 "model_type": "RandomForestRegressor",
-                "version": 19,
+                "version": 20,
                 "description": "Best model for target_aqi_next_3d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -910,7 +910,7 @@
         "pipeline_info": {
             "feature_group": "aqi_features",
             "feature_group_version": 3,
-            "scaler_version": 20,
+            "scaler_version": 21,
             "data_source": {
                 "pollution": "OpenWeather Air Pollution API",
                 "weather": "Open-Meteo Archive + Forecast API"
