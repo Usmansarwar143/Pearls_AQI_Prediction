@@ -25,8 +25,9 @@
                 <div class="header-meta" id="headerMeta">
                     <span class="meta-chip" id="lastUpdated">Loading...</span>
                 </div>
-                <div class="header-badge">
+                <div class="header-badge" style="display:flex; gap:0.5rem; align-items:center;">
                     <span class="status-dot"></span> Sadiqabad, Pakistan
+                    <button id="shareBtn" class="skeuo-btn" style="padding: 0.2rem 0.8rem; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;">Share</button>
                 </div>
             </div>
         </div>
@@ -526,6 +527,26 @@
             </div>
         </div>
     </footer>
+
+    <!-- Chatbot FAB -->
+    <div id="chatbotFab" class="chatbot-fab skeuo-circle" title="Ask AI Assistant">
+        <span class="fab-icon">💬</span>
+    </div>
+
+    <!-- Chatbot Panel -->
+    <div id="chatbotPanel" class="chatbot-panel skeuo-panel hidden">
+        <div class="chat-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin:0;">AI Assistant</h4>
+            <button id="closeChatBtn" class="skeuo-btn" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; cursor: pointer;">X</button>
+        </div>
+        <div id="chatMessages" class="chat-messages skeuo-inset" style="height: 250px; overflow-y: auto; margin-bottom: 1rem; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+            <!-- Messages go here -->
+        </div>
+        <div class="chat-input-area" style="display: flex; gap: 0.5rem;">
+            <input type="text" id="chatInput" class="skeuo-inset" placeholder="Ask about Usman or AQI..." style="flex: 1; border: none; outline: none; background: transparent; font-family: inherit; font-size: 0.9rem;" autocomplete="off">
+            <button id="chatSendBtn" class="skeuo-btn" style="padding: 0.4rem 1rem; cursor: pointer;">Send</button>
+        </div>
+    </div>
 
     <script src="script.js?v=13"></script>
 </body>

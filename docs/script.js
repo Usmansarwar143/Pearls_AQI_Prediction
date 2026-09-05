@@ -623,6 +623,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==================== SHARE BUTTON ====================
+    const shareBtn = document.getElementById('shareBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText('https://usmansarwar143.github.io/Pearls_AQI_Prediction/')
+                .then(() => {
+                    const originalText = shareBtn.textContent;
+                    shareBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                    }, 3000);
+                })
+                .catch(err => console.error('Failed to copy: ', err));
+        });
+    }
+
+    // ==================== CHATBOT LOGIC ====================
+    const chatbotFab = document.getElementById('chatbotFab');
+    const chatbotPanel = document.getElementById('chatbotPanel');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatMessages = document.getElementById('chatMessages');
+
+    if (chatbotFab && chatbotPanel) {
+        chatbotFab.addEventListener('click', () => {
+            chatbotPanel.classList.toggle('hidden');
+            if (!chatbotPanel.classList.contains('hidden') && chatMessages.children.length === 0) {
+                // Initial greeting
+                appendMessage("Hello! I'm the Pearls AQI Assistant. I can tell you about the Sadiqabad Air Quality, the AI models powering this dashboard, or about my creator, Usman Sarwar! How can I help you today?", false);
+            }
+        });
+
+        closeChatBtn.addEventListener('click', () => {
+            chatbotPanel.classList.add('hidden');
+        });
+
+        function appendMessage(text, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${isUser ? 'chat-user' : 'chat-bot'}`;
+            msgDiv.textContent = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleChat() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            
+            // Add user message
+            appendMessage(text, true);
+            chatInput.value = '';
+
+            // Generate bot response (Rule-based)
+            setTimeout(() => {
+                const lower = text.toLowerCase();
+                let response = "";
+
+                if (lower.includes("usman") || lower.includes("sarwar") || lower.includes("who made") || lower.includes("creator") || lower.includes("developer")) {
+                    response = "This project was built by Usman Sarwar, a Computer Systems Engineer and AI Engineer from Sukkur IBA University! He has hands-on experience in Artificial Intelligence, computer vision, robotics, automation, and software development. He’s an ambitious tech enthusiast who continuously explores emerging technologies and builds practical solutions like this completely serverless MLOps pipeline!";
+                } else if (lower.includes("model") || lower.includes("xgboost") || lower.includes("how it works") || lower.includes("machine learning")) {
+                    response = "The predictions are powered by highly optimized XGBoost regressor models trained on historical Sadiqabad air pollution and weather data. It is a 100% serverless MLOps pipeline orchestrated by GitHub Actions and the Hopsworks Feature Store, calculating 1, 2, and 3-day forecasts with SHAP explainability!";
+                } else if (lower.includes("aqi") || lower.includes("sadiqabad") || lower.includes("air quality") || lower.includes("today")) {
+                    response = "This dashboard tracks the real-time Air Quality Index (AQI) of Sadiqabad, Pakistan. The latest live readings and health guidance are available on the 'Live AQI & Forecast' tab! The AQI is calculated based on EPA standards using pollutants like PM2.5 and PM10.";
+                } else if (lower.includes("hi") || lower.includes("hello") || lower.includes("hey")) {
+                    response = "Hi there! I am the Pearls AQI Assistant. Ask me anything about Usman Sarwar, the machine learning models, or the air quality data!";
+                } else {
+                    response = "That's an interesting question! I am an AI specifically tuned to know about this Sadiqabad AQI project and my creator, Usman Sarwar. Could you ask something related to those topics?";
+                }
+                
+                appendMessage(response, false);
+            }, 600); // Simulate network delay
+        }
+
+        chatSendBtn.addEventListener('click', handleChat);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleChat();
+        });
+    }
+
     // ==================== START ====================
     fetchData();
 });
