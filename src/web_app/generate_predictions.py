@@ -245,7 +245,24 @@ def generate_predictions():
     fs = project.get_feature_store()
     feature_group = fs.get_feature_group(name="aqi_features", version=fg_version)
     query = feature_group.select_all()
-    df = query.read(read_options={"use_hive": True})
+    
+    # Retry mechanism for fetching data from Hopsworks
+    import time
+    max_retries = 3
+    df = None
+    for attempt in range(max_retries):
+        try:
+            print(f"Fetching data (Attempt {attempt + 1}/{max_retries})...")
+            df = query.read(read_options={"use_hive": True})
+            break
+        except Exception as e:
+            print(f"Error fetching data on attempt {attempt + 1}: {e}")
+            if attempt < max_retries - 1:
+                print("Retrying in 5 seconds...")
+                time.sleep(5)
+            else:
+                print("Failed to fetch data after multiple attempts.")
+                raise e
     
     df = df.sort_values(by="date", ascending=False)
     latest_row = df.iloc[0:1]
