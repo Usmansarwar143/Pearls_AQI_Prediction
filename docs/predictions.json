@@ -1,7 +1,7 @@
 {
     "status": "success",
-    "generated_at": "2026-09-05T23:38:00.196799+00:00",
-    "generation_time_seconds": 103.8,
+    "generated_at": "2026-09-06T02:58:10.220039+00:00",
+    "generation_time_seconds": 103.11,
     "data": {
         "current_aqi": 75.0,
         "current_date": "2026-09-05T23:00:00.000000",
@@ -229,7 +229,7 @@
         "feature_correlations": null,
         "scaler_info": {
             "type": "StandardScaler",
-            "version": 22,
+            "version": 23,
             "n_features": 17,
             "means": {
                 "aqi": 140.1995,
@@ -273,7 +273,7 @@
         "model_info": {
             "1d": {
                 "model_type": "RandomForestRegressor",
-                "version": 22,
+                "version": 23,
                 "description": "Best model for target_aqi_next_1d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -288,7 +288,7 @@
             },
             "2d": {
                 "model_type": "RandomForestRegressor",
-                "version": 21,
+                "version": 22,
                 "description": "Best model for target_aqi_next_2d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -303,7 +303,7 @@
             },
             "3d": {
                 "model_type": "RandomForestRegressor",
-                "version": 21,
+                "version": 22,
                 "description": "Best model for target_aqi_next_3d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -910,7 +910,7 @@
         "pipeline_info": {
             "feature_group": "aqi_features",
             "feature_group_version": 3,
-            "scaler_version": 22,
+            "scaler_version": 23,
             "data_source": {
                 "pollution": "OpenWeather Air Pollution API",
                 "weather": "Open-Meteo Archive + Forecast API"
