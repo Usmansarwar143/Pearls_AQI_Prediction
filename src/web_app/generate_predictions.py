@@ -270,7 +270,11 @@ def generate_predictions():
     # If the latest date in Hopsworks is more than 36 hours old, the offline store
     # hasn't materialized the newest data yet. Fall back to fetching directly from APIs.
     latest_date_in_store = pd.to_datetime(df.iloc[0]['date'])
-    staleness_hours = (datetime.now(timezone.utc) - latest_date_in_store.tz_localize('UTC')).total_seconds() / 3600
+    if latest_date_in_store.tzinfo is None:
+        latest_date_in_store = latest_date_in_store.tz_localize('UTC')
+    else:
+        latest_date_in_store = latest_date_in_store.tz_convert('UTC')
+    staleness_hours = (datetime.now(timezone.utc) - latest_date_in_store).total_seconds() / 3600
     print(f"Latest date in Feature Store: {latest_date_in_store} (staleness: {staleness_hours:.1f} hours)")
     
     if staleness_hours > 36:
