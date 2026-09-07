@@ -106,6 +106,7 @@ def fetch_recent_pollution(lat, lon, past_days=7):
     
     if 'hourly' in data:
         df = pd.DataFrame({
+            'timestamp': pd.to_datetime(data['hourly']['time']).astype('int64') // 10**9,
             'date': pd.to_datetime(data['hourly']['time']),
             'co': data['hourly']['carbon_monoxide'],
             'no2': data['hourly']['nitrogen_dioxide'],
