@@ -1,7 +1,7 @@
 {
     "status": "success",
-    "generated_at": "2026-09-07T07:08:39.528291+00:00",
-    "generation_time_seconds": 70.99,
+    "generated_at": "2026-09-07T07:40:15.593099+00:00",
+    "generation_time_seconds": 148.07,
     "data": {
         "current_aqi": 75.0,
         "current_date": "2026-09-05T23:00:00.000000",
@@ -229,7 +229,7 @@
         "feature_correlations": null,
         "scaler_info": {
             "type": "StandardScaler",
-            "version": 24,
+            "version": 25,
             "n_features": 17,
             "means": {
                 "aqi": 140.1995,
@@ -273,7 +273,7 @@
         "model_info": {
             "1d": {
                 "model_type": "RandomForestRegressor",
-                "version": 24,
+                "version": 25,
                 "description": "Best model for target_aqi_next_1d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -910,7 +910,7 @@
         "pipeline_info": {
             "feature_group": "aqi_features",
             "feature_group_version": 3,
-            "scaler_version": 24,
+            "scaler_version": 25,
             "data_source": {
                 "pollution": "OpenWeather Air Pollution API",
                 "weather": "Open-Meteo Archive + Forecast API"
