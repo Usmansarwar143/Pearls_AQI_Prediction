@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def run_hourly_update(days_back=1):
+def run_hourly_update(days_back=7):
     print(f"Starting hourly feature update for the last {days_back} day(s)...")
     
     # 1. Fetch Data
@@ -45,7 +45,7 @@ def run_hourly_update(days_back=1):
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            aqi_fg.insert(features_df, write_options={"wait_for_job": False})
+            aqi_fg.insert(features_df, write_options={"wait_for_job": True})
             print("Hourly feature update successfully pushed to Hopsworks!")
             break
         except Exception as e:
@@ -58,4 +58,4 @@ def run_hourly_update(days_back=1):
                 raise e
 
 if __name__ == "__main__":
-    run_hourly_update(days_back=1)
+    run_hourly_update(days_back=7)
