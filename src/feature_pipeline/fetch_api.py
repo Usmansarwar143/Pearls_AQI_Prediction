@@ -97,6 +97,34 @@ def fetch_recent_weather(lat, lon, past_days=7):
         return df
     return pd.DataFrame()
 
+def fetch_recent_pollution(lat, lon, past_days=7):
+    """Fetch recent pollution data to fill the 2-day lag in OpenWeather historical API."""
+    url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&past_days={past_days}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia"
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
+    
+    if 'hourly' in data:
+        df = pd.DataFrame({
+            'date': pd.to_datetime(data['hourly']['time']),
+            'co': data['hourly']['carbon_monoxide'],
+            'no2': data['hourly']['nitrogen_dioxide'],
+            'o3': data['hourly']['ozone'],
+            'so2': data['hourly']['sulphur_dioxide'],
+            'pm2_5': data['hourly']['pm2_5'],
+            'pm10': data['hourly']['pm10'],
+            'nh3': data['hourly']['ammonia'],
+            'no': 0.0, # NO not provided by Open-Meteo, fill with 0 (not used for EPA AQI)
+        })
+        
+        df['aqi'] = df.apply(lambda row: calculate_epa_aqi(
+            pm2_5=row['pm2_5'], pm10=row['pm10'], o3=row['o3'],
+            no2=row['no2'], so2=row['so2'], co=row['co']
+        ), axis=1)
+        
+        return df
+    return pd.DataFrame()
+
 def get_data(days_back=730):
     lat, lon = get_coordinates()
     
@@ -108,6 +136,14 @@ def get_data(days_back=730):
     
     print("Fetching historical pollution data...")
     pollution_df = fetch_historical_pollution(lat, lon, start_ts, end_ts)
+    
+    print("Fetching recent pollution data to fill lag (Open-Meteo API)...")
+    recent_pollution_df = fetch_recent_pollution(lat, lon, past_days=min(days_back, 7))
+    if not recent_pollution_df.empty:
+        pollution_df = pd.concat([pollution_df, recent_pollution_df], ignore_index=True)
+        pollution_df = pollution_df.drop_duplicates(subset=['date'], keep='last')
+        pollution_df = pollution_df.sort_values('date').reset_index(drop=True)
+        print(f"Combined pollution data range: {pollution_df['date'].min()} to {pollution_df['date'].max()}")
     
     print("Fetching historical weather data (Archive API)...")
     start_date_str = start_date.strftime('%Y-%m-%d')
