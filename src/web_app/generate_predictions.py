@@ -253,7 +253,7 @@ def generate_predictions():
     for attempt in range(max_retries):
         try:
             print(f"Fetching data (Attempt {attempt + 1}/{max_retries})...")
-            df = query.read(read_options={"use_hive": True})
+            df = query.read(read_options={"use_hive": False})
             break
         except Exception as e:
             print(f"Error fetching data on attempt {attempt + 1}: {e}")

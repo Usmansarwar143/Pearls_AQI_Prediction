@@ -162,6 +162,12 @@ def get_data(days_back=730):
         weather_df = weather_df.sort_values('date').reset_index(drop=True)
         print(f"Combined weather data range: {weather_df['date'].min()} to {weather_df['date'].max()}")
     
+    # Filter out any future data (Open-Meteo can return up to 4 days of forecast by default)
+    pollution_df = pollution_df[pollution_df['date'] <= end_date].reset_index(drop=True)
+    weather_df = weather_df[weather_df['date'] <= end_date].reset_index(drop=True)
+    print(f"Final pollution data range: {pollution_df['date'].min()} to {pollution_df['date'].max()}")
+    print(f"Final weather data range: {weather_df['date'].min()} to {weather_df['date'].max()}")
+    
     return pollution_df, weather_df
 
 if __name__ == "__main__":
