@@ -612,6 +612,19 @@ def generate_predictions():
     os.makedirs(docs_dir, exist_ok=True)
     out_path = os.path.join(docs_dir, 'predictions.json')
     
+    # Sanitize: replace NaN/Infinity with None (NaN is not valid JSON)
+    import math
+    def sanitize(obj):
+        if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+            return None
+        if isinstance(obj, dict):
+            return {k: sanitize(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [sanitize(v) for v in obj]
+        return obj
+    
+    output = sanitize(output)
+    
     with open(out_path, 'w') as f:
         json.dump(output, f, indent=4, default=str)
         
