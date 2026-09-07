@@ -265,6 +265,31 @@ def generate_predictions():
                 raise e
     
     df = df.sort_values(by="date", ascending=False)
+    
+    # --- Freshness check ---
+    # If the latest date in Hopsworks is more than 36 hours old, the offline store
+    # hasn't materialized the newest data yet. Fall back to fetching directly from APIs.
+    latest_date_in_store = pd.to_datetime(df.iloc[0]['date'])
+    staleness_hours = (datetime.now(timezone.utc) - latest_date_in_store.tz_localize('UTC')).total_seconds() / 3600
+    print(f"Latest date in Feature Store: {latest_date_in_store} (staleness: {staleness_hours:.1f} hours)")
+    
+    if staleness_hours > 36:
+        print(f"WARNING: Feature Store data is {staleness_hours:.1f}h stale. Fetching fresh data directly from APIs...")
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'feature_pipeline'))
+        from fetch_api import get_data
+        from compute_features import engineer_features
+        
+        p_df, w_df = get_data(days_back=7)
+        fresh_df = engineer_features(p_df, w_df)
+        print(f"Fresh data fetched: {fresh_df.shape[0]} rows, date range: {fresh_df['date'].min()} to {fresh_df['date'].max()}")
+        
+        # Merge fresh data into the Hopsworks dataframe, preferring fresh data
+        df = pd.concat([df, fresh_df], ignore_index=True)
+        df = df.drop_duplicates(subset=['date'], keep='last')
+        df = df.sort_values(by="date", ascending=False).reset_index(drop=True)
+        print(f"After merge: latest date is now {df.iloc[0]['date']}")
+    
     latest_row = df.iloc[0:1]
     
     # Extended history for trend analysis (30 data points)
