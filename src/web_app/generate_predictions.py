@@ -271,28 +271,114 @@ def generate_predictions():
     df['date'] = pd.to_datetime(df['date']).dt.tz_localize(None)
     
     # --- Always supplement with fresh API data ---
-    # The Hopsworks offline feature store (Hudi) can have a materialization delay
-    # of several hours. To ensure the dashboard always shows up-to-date data,
-    # we always fetch the last 7 days directly from the APIs and merge.
+    # The Hopsworks offline feature store (Hudi) can have a materialization delay.
+    # Fetch the last 7 days directly from the APIs and merge to ensure freshness.
     print("Fetching fresh data directly from APIs to ensure up-to-date predictions...")
-    import sys
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'feature_pipeline'))
-    from fetch_api import get_data
-    from compute_features import engineer_features
     
     try:
-        p_df, w_df = get_data(days_back=7)
-        fresh_df = engineer_features(p_df, w_df)
-        fresh_df['date'] = pd.to_datetime(fresh_df['date']).dt.tz_localize(None)
-        print(f"Fresh data: {fresh_df.shape[0]} rows, range: {fresh_df['date'].min()} to {fresh_df['date'].max()}")
+        import requests as req
+        from datetime import timedelta
         
-        # Merge: Hopsworks has the full historical data, fresh API data fills the recent gap
-        df = pd.concat([df, fresh_df], ignore_index=True)
-        df = df.drop_duplicates(subset=['date'], keep='last')
-        df = df.sort_values(by="date", ascending=False).reset_index(drop=True)
-        print(f"After merge: latest date is now {df.iloc[0]['date']}")
+        # 1. Get coordinates for Sadiqabad
+        ow_key = os.getenv("OPENWEATHER_API_KEY", "")
+        geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q=SadiqAbad,PK&limit=1&appid={ow_key}"
+        geo_resp = req.get(geo_url, timeout=10)
+        geo_data = geo_resp.json()
+        lat, lon = geo_data[0]['lat'], geo_data[0]['lon']
+        
+        now_utc = datetime.now(timezone.utc)
+        
+        # 2. Fetch recent pollution from Open-Meteo Air Quality API
+        aq_url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&past_days=7&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia"
+        aq_resp = req.get(aq_url, timeout=15)
+        aq_data = aq_resp.json()
+        
+        # 3. Fetch recent weather from Open-Meteo Forecast API
+        wx_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&past_days=7&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
+        wx_resp = req.get(wx_url, timeout=15)
+        wx_data = wx_resp.json()
+        
+        if 'hourly' in aq_data and 'hourly' in wx_data:
+            # Build pollution df
+            poll_df = pd.DataFrame({
+                'date': pd.to_datetime(aq_data['hourly']['time']),
+                'co': aq_data['hourly']['carbon_monoxide'],
+                'no2': aq_data['hourly']['nitrogen_dioxide'],
+                'o3': aq_data['hourly']['ozone'],
+                'so2': aq_data['hourly']['sulphur_dioxide'],
+                'pm2_5': aq_data['hourly']['pm2_5'],
+                'pm10': aq_data['hourly']['pm10'],
+                'nh3': aq_data['hourly']['ammonia'],
+                'no': 0.0,
+            })
+            
+            # Compute EPA AQI inline (breakpoint interpolation)
+            def _bp_aqi(c, bps):
+                if c is None or (isinstance(c, float) and np.isnan(c)):
+                    return None
+                for lo, hi, alo, ahi in bps:
+                    if lo <= c <= hi:
+                        return round(((ahi - alo) / (hi - lo)) * (c - lo) + alo)
+                return None
+            
+            PM25_BP = [(0,12,0,50),(12.1,35.4,51,100),(35.5,55.4,101,150),(55.5,150.4,151,200),(150.5,250.4,201,300),(250.5,350.4,301,400),(350.5,500.4,401,500)]
+            PM10_BP = [(0,54,0,50),(55,154,51,100),(155,254,101,150),(255,354,151,200),(355,424,201,300),(425,504,301,400),(505,604,401,500)]
+            
+            def calc_aqi(row):
+                subs = []
+                for val, bp in [(row.get('pm2_5'), PM25_BP), (row.get('pm10'), PM10_BP)]:
+                    a = _bp_aqi(val, bp)
+                    if a is not None:
+                        subs.append(a)
+                return max(subs) if subs else 0
+            
+            poll_df['aqi'] = poll_df.apply(calc_aqi, axis=1)
+            poll_df['timestamp'] = poll_df['date'].astype('int64') // 10**9
+            
+            # Build weather df
+            wx_df = pd.DataFrame({
+                'date': pd.to_datetime(wx_data['hourly']['time']),
+                'temperature_2m': wx_data['hourly']['temperature_2m'],
+                'relative_humidity_2m': wx_data['hourly']['relative_humidity_2m'],
+                'wind_speed_10m': wx_data['hourly']['wind_speed_10m'],
+            })
+            
+            # Floor to hour and merge
+            poll_df['date'] = poll_df['date'].dt.floor('h')
+            wx_df['date'] = wx_df['date'].dt.floor('h')
+            poll_df = poll_df.drop_duplicates(subset=['date'])
+            wx_df = wx_df.drop_duplicates(subset=['date'])
+            
+            fresh_df = pd.merge(poll_df, wx_df, on='date', how='inner')
+            fresh_df = fresh_df.sort_values('date').reset_index(drop=True)
+            
+            # Filter out future data
+            fresh_df = fresh_df[fresh_df['date'] <= now_utc.replace(tzinfo=None)]
+            
+            # Add time-based features
+            fresh_df['hour'] = fresh_df['date'].dt.hour
+            fresh_df['day_of_week'] = fresh_df['date'].dt.dayofweek
+            fresh_df['month'] = fresh_df['date'].dt.month
+            fresh_df['aqi_change_rate'] = fresh_df['aqi'].diff().fillna(0)
+            fresh_df['aqi_rolling_24h'] = fresh_df['aqi'].rolling(window=24, min_periods=1).mean()
+            fresh_df['target_aqi_next_1d'] = fresh_df['aqi'].shift(-24)
+            fresh_df['target_aqi_next_2d'] = fresh_df['aqi'].shift(-48)
+            fresh_df['target_aqi_next_3d'] = fresh_df['aqi'].shift(-72)
+            
+            fresh_df['date'] = pd.to_datetime(fresh_df['date']).dt.tz_localize(None)
+            print(f"Fresh data: {fresh_df.shape[0]} rows, range: {fresh_df['date'].min()} to {fresh_df['date'].max()}")
+            
+            # Merge with Hopsworks data
+            df = pd.concat([df, fresh_df], ignore_index=True)
+            df = df.drop_duplicates(subset=['date'], keep='last')
+            df = df.sort_values(by="date", ascending=False).reset_index(drop=True)
+            print(f"After merge: latest date is now {df.iloc[0]['date']}")
+        else:
+            print("WARNING: Open-Meteo API returned no hourly data.")
     except Exception as e:
-        print(f"WARNING: Fresh data fetch failed ({e}), using Hopsworks data only.")
+        import traceback
+        print(f"WARNING: Fresh data fetch failed: {e}")
+        traceback.print_exc()
     
     latest_row = df.iloc[0:1]
     
