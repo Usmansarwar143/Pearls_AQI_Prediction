@@ -1,31 +1,11 @@
 {
     "status": "success",
-    "generated_at": "2026-09-11T03:04:28.810331+00:00",
-    "generation_time_seconds": 221.57,
+    "generated_at": "2026-09-11T08:02:59.720254+00:00",
+    "generation_time_seconds": 198.8,
     "data": {
-        "current_aqi": 76.0,
-        "current_date": "2026-09-11T03:00:00.000000000",
+        "current_aqi": 65.0,
+        "current_date": "2026-09-11T08:00:00.000000000",
         "history": [
-            {
-                "date": "2026-09-10 21:00:00",
-                "aqi": 55
-            },
-            {
-                "date": "2026-09-10 22:00:00",
-                "aqi": 56
-            },
-            {
-                "date": "2026-09-10 23:00:00",
-                "aqi": 58
-            },
-            {
-                "date": "2026-09-11 00:00:00",
-                "aqi": 62
-            },
-            {
-                "date": "2026-09-11 01:00:00",
-                "aqi": 66
-            },
             {
                 "date": "2026-09-11 02:00:00",
                 "aqi": 74
@@ -33,29 +13,29 @@
             {
                 "date": "2026-09-11 03:00:00",
                 "aqi": 76
-            }
-        ],
-        "extended_history": [
-            {
-                "date": "2026-09-09 22:00:00",
-                "aqi": 65
             },
             {
-                "date": "2026-09-09 23:00:00",
-                "aqi": 68
+                "date": "2026-09-11 04:00:00",
+                "aqi": 75
             },
             {
-                "date": "2026-09-10 00:00:00",
+                "date": "2026-09-11 05:00:00",
                 "aqi": 72
             },
             {
-                "date": "2026-09-10 01:00:00",
-                "aqi": 78
+                "date": "2026-09-11 06:00:00",
+                "aqi": 68
             },
             {
-                "date": "2026-09-10 02:00:00",
-                "aqi": 85
+                "date": "2026-09-11 07:00:00",
+                "aqi": 67
             },
+            {
+                "date": "2026-09-11 08:00:00",
+                "aqi": 65
+            }
+        ],
+        "extended_history": [
             {
                 "date": "2026-09-10 03:00:00",
                 "aqi": 88
@@ -155,36 +135,56 @@
             {
                 "date": "2026-09-11 03:00:00",
                 "aqi": 76
+            },
+            {
+                "date": "2026-09-11 04:00:00",
+                "aqi": 75
+            },
+            {
+                "date": "2026-09-11 05:00:00",
+                "aqi": 72
+            },
+            {
+                "date": "2026-09-11 06:00:00",
+                "aqi": 68
+            },
+            {
+                "date": "2026-09-11 07:00:00",
+                "aqi": 67
+            },
+            {
+                "date": "2026-09-11 08:00:00",
+                "aqi": 65
             }
         ],
         "predictions": {
-            "1_day": 87,
-            "2_days": 80,
-            "3_days": 79,
-            "raw_1_day": 86.81,
-            "raw_2_days": 80.11,
-            "raw_3_days": 79.04
+            "1_day": 93,
+            "2_days": 101,
+            "3_days": 104,
+            "raw_1_day": 93.37,
+            "raw_2_days": 100.87,
+            "raw_3_days": 103.61
         },
         "prediction_intervals": {
             "1d": {
-                "mean": 86.81,
-                "std": 29.28,
-                "ci_lower": 29.42,
-                "ci_upper": 144.2,
+                "mean": 93.37,
+                "std": 28.39,
+                "ci_lower": 37.72,
+                "ci_upper": 149.02,
                 "n_trees": 100
             },
             "2d": {
-                "mean": 80.11,
-                "std": 21.17,
-                "ci_lower": 38.61,
-                "ci_upper": 121.61,
+                "mean": 100.87,
+                "std": 26.5,
+                "ci_lower": 48.94,
+                "ci_upper": 152.8,
                 "n_trees": 100
             },
             "3d": {
-                "mean": 79.04,
-                "std": 24.51,
-                "ci_lower": 31.0,
-                "ci_upper": 127.08,
+                "mean": 103.61,
+                "std": 26.67,
+                "ci_lower": 51.34,
+                "ci_upper": 155.88,
                 "n_trees": 100
             }
         },
@@ -208,28 +208,28 @@
             "aqi_rolling_24h"
         ],
         "latest_feature_values": {
-            "aqi": 76.0,
-            "co": 180.0,
+            "aqi": 65.0,
+            "co": 119.0,
             "no": 0.0,
-            "no2": 5.1,
-            "o3": 70.0,
-            "so2": 10.0,
-            "pm2_5": 24.1,
-            "pm10": 38.9,
+            "no2": 1.1,
+            "o3": 113.0,
+            "so2": 7.7,
+            "pm2_5": 18.8,
+            "pm10": 37.8,
             "nh3": null,
-            "temperature_2m": 30.0,
-            "relative_humidity_2m": 57.0,
-            "wind_speed_10m": 11.2,
-            "hour": 3.0,
+            "temperature_2m": 39.2,
+            "relative_humidity_2m": 24.0,
+            "wind_speed_10m": 11.7,
+            "hour": 8.0,
             "day_of_week": 4.0,
             "month": 9.0,
-            "aqi_change_rate": 2.0,
-            "aqi_rolling_24h": 73.7917
+            "aqi_change_rate": -2.0,
+            "aqi_rolling_24h": 71.8333
         },
         "feature_correlations": null,
         "scaler_info": {
             "type": "StandardScaler",
-            "version": 28,
+            "version": 29,
             "n_features": 17,
             "means": {
                 "aqi": 140.1995,
@@ -273,7 +273,7 @@
         "model_info": {
             "1d": {
                 "model_type": "RandomForestRegressor",
-                "version": 28,
+                "version": 29,
                 "description": "Best model for target_aqi_next_1d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -288,7 +288,7 @@
             },
             "2d": {
                 "model_type": "RandomForestRegressor",
-                "version": 26,
+                "version": 27,
                 "description": "Best model for target_aqi_next_2d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -303,7 +303,7 @@
             },
             "3d": {
                 "model_type": "RandomForestRegressor",
-                "version": 26,
+                "version": 27,
                 "description": "Best model for target_aqi_next_3d using RandomForest (US EPA scale 0-500)",
                 "parameters": {
                     "n_estimators": 100,
@@ -320,10 +320,10 @@
         "evaluation_metrics": {
             "1d": {
                 "r2": 0.9713,
-                "rmse": 7.1371,
-                "mae": 3.5527,
-                "test_samples": 1696,
-                "train_samples": 6780,
+                "rmse": 7.1351,
+                "mae": 3.5516,
+                "test_samples": 1697,
+                "train_samples": 6784,
                 "actual_vs_predicted": [
                     {
                         "actual": 42.0,
@@ -409,10 +409,10 @@
             },
             "2d": {
                 "r2": 0.9702,
-                "rmse": 7.2365,
-                "mae": 3.7699,
-                "test_samples": 1696,
-                "train_samples": 6780,
+                "rmse": 7.2344,
+                "mae": 3.7677,
+                "test_samples": 1697,
+                "train_samples": 6784,
                 "actual_vs_predicted": [
                     {
                         "actual": 60.0,
@@ -498,10 +498,10 @@
             },
             "3d": {
                 "r2": 0.9732,
-                "rmse": 6.874,
-                "mae": 3.6046,
-                "test_samples": 1696,
-                "train_samples": 6780,
+                "rmse": 6.8732,
+                "mae": 3.6056,
+                "test_samples": 1697,
+                "train_samples": 6784,
                 "actual_vs_predicted": [
                     {
                         "actual": 31.0,
@@ -588,8 +588,8 @@
         },
         "residual_analysis": {
             "1d": {
-                "mean_residual": -0.6618,
-                "std_residual": 7.1064,
+                "mean_residual": -0.6623,
+                "std_residual": 7.1043,
                 "max_overpredict": -63.47,
                 "max_underpredict": 36.47,
                 "residual_histogram": {
@@ -613,7 +613,7 @@
                         11,
                         21,
                         211,
-                        1332,
+                        1333,
                         86,
                         15,
                         4
@@ -622,7 +622,7 @@
             },
             "2d": {
                 "mean_residual": -0.066,
-                "std_residual": 7.2362,
+                "std_residual": 7.2341,
                 "max_overpredict": -45.76,
                 "max_underpredict": 48.41,
                 "residual_histogram": {
@@ -644,7 +644,7 @@
                         8,
                         23,
                         62,
-                        1166,
+                        1167,
                         365,
                         42,
                         10,
@@ -654,8 +654,8 @@
                 }
             },
             "3d": {
-                "mean_residual": -0.4738,
-                "std_residual": 6.8577,
+                "mean_residual": -0.4704,
+                "std_residual": 6.8571,
                 "max_overpredict": -66.2,
                 "max_underpredict": 38.65,
                 "residual_histogram": {
@@ -679,7 +679,7 @@
                         10,
                         25,
                         230,
-                        1318,
+                        1319,
                         89,
                         7,
                         7
@@ -691,97 +691,97 @@
             "1d": {
                 "base_value": 141.0728,
                 "feature_values": {
-                    "aqi": -12.2342,
-                    "co": 4.6211,
-                    "no": -0.0777,
-                    "no2": 3.5028,
-                    "o3": -0.7412,
-                    "so2": 1.3246,
-                    "pm2_5": -13.1728,
-                    "pm10": -9.549,
-                    "nh3": 0.2703,
-                    "temperature_2m": -0.7205,
-                    "relative_humidity_2m": -0.1329,
-                    "wind_speed_10m": 1.6319,
-                    "hour": 0.302,
-                    "day_of_week": -0.1793,
-                    "month": -1.7651,
-                    "aqi_change_rate": 0.0283,
-                    "aqi_rolling_24h": -27.3711
+                    "aqi": -8.1681,
+                    "co": 5.8722,
+                    "no": -0.0698,
+                    "no2": 0.1467,
+                    "o3": 1.3549,
+                    "so2": 1.6677,
+                    "pm2_5": -12.7016,
+                    "pm10": -9.3914,
+                    "nh3": 0.6086,
+                    "temperature_2m": -0.9874,
+                    "relative_humidity_2m": 1.6296,
+                    "wind_speed_10m": 1.486,
+                    "hour": 0.6117,
+                    "day_of_week": 0.0447,
+                    "month": -0.3932,
+                    "aqi_change_rate": -0.285,
+                    "aqi_rolling_24h": -29.1283
                 }
             },
             "2d": {
                 "base_value": 139.7703,
                 "feature_values": {
-                    "aqi": -9.3187,
-                    "co": 6.9929,
-                    "no": -0.1316,
-                    "no2": 2.1658,
-                    "o3": -0.7253,
-                    "so2": 1.0773,
-                    "pm2_5": -5.5799,
-                    "pm10": -5.9289,
-                    "nh3": 0.5231,
-                    "temperature_2m": -0.9136,
-                    "relative_humidity_2m": -0.5623,
-                    "wind_speed_10m": 0.2086,
-                    "hour": 1.3985,
-                    "day_of_week": 0.0137,
-                    "month": -6.1605,
-                    "aqi_change_rate": -0.1079,
-                    "aqi_rolling_24h": -42.6114
+                    "aqi": -1.9801,
+                    "co": 6.8366,
+                    "no": -0.3251,
+                    "no2": 0.1448,
+                    "o3": 2.8014,
+                    "so2": 1.9434,
+                    "pm2_5": -2.379,
+                    "pm10": -5.8707,
+                    "nh3": 0.8862,
+                    "temperature_2m": -0.7849,
+                    "relative_humidity_2m": 2.6937,
+                    "wind_speed_10m": 0.2334,
+                    "hour": 1.4247,
+                    "day_of_week": 0.7478,
+                    "month": -4.3125,
+                    "aqi_change_rate": -0.1932,
+                    "aqi_rolling_24h": -40.7668
                 }
             },
             "3d": {
                 "base_value": 139.7567,
                 "feature_values": {
-                    "aqi": -5.4122,
-                    "co": 3.1035,
-                    "no": -0.1954,
-                    "no2": 1.0799,
-                    "o3": -1.6003,
-                    "so2": 1.8341,
-                    "pm2_5": -22.632,
-                    "pm10": -13.296,
-                    "nh3": 0.7295,
-                    "temperature_2m": -1.9857,
-                    "relative_humidity_2m": 0.5797,
-                    "wind_speed_10m": 0.5793,
-                    "hour": 0.5452,
-                    "day_of_week": -0.8552,
-                    "month": -7.5869,
-                    "aqi_change_rate": 0.0073,
-                    "aqi_rolling_24h": -15.6113
+                    "aqi": -3.7376,
+                    "co": 2.1104,
+                    "no": -0.4707,
+                    "no2": -0.0708,
+                    "o3": 9.7681,
+                    "so2": 1.9193,
+                    "pm2_5": -19.5117,
+                    "pm10": -6.6916,
+                    "nh3": 1.2639,
+                    "temperature_2m": -3.0635,
+                    "relative_humidity_2m": 1.3496,
+                    "wind_speed_10m": 0.2546,
+                    "hour": 0.6594,
+                    "day_of_week": -0.0355,
+                    "month": -6.3338,
+                    "aqi_change_rate": -0.1674,
+                    "aqi_rolling_24h": -13.3895
                 }
             }
         },
         "global_feature_importance": {
-            "aqi_rolling_24h": 28.0194,
-            "pm2_5": 12.2645,
-            "pm10": 9.5773,
-            "aqi": 7.1443,
-            "co": 4.4531,
-            "no2": 1.8257,
-            "month": 1.6214,
-            "temperature_2m": 1.3848,
-            "o3": 1.002,
-            "wind_speed_10m": 0.9799,
-            "so2": 0.971,
-            "nh3": 0.782,
-            "day_of_week": 0.5311,
-            "hour": 0.3293,
-            "relative_humidity_2m": 0.3204,
-            "aqi_change_rate": 0.2423,
-            "no": 0.162
+            "aqi_rolling_24h": 28.0217,
+            "pm2_5": 12.2162,
+            "pm10": 9.7252,
+            "aqi": 7.092,
+            "co": 4.4592,
+            "no2": 1.8423,
+            "month": 1.6361,
+            "temperature_2m": 1.3599,
+            "o3": 1.0032,
+            "wind_speed_10m": 0.9794,
+            "so2": 0.9562,
+            "nh3": 0.7672,
+            "day_of_week": 0.5444,
+            "hour": 0.3238,
+            "relative_humidity_2m": 0.3098,
+            "aqi_change_rate": 0.2428,
+            "no": 0.1611
         },
         "dataset_statistics": {
-            "total_rows": 8607,
+            "total_rows": 8612,
             "date_range": {
                 "start": "2025-09-04 13:00:00",
-                "end": "2026-09-11 03:00:00"
+                "end": "2026-09-11 08:00:00"
             },
             "aqi_statistics": {
-                "mean": 138.7,
+                "mean": 138.66,
                 "median": 123.0,
                 "std": 71.37,
                 "min": 24.0,
@@ -791,50 +791,50 @@
             },
             "feature_statistics": {
                 "aqi": {
-                    "mean": 138.6987,
-                    "std": 71.3691,
+                    "mean": 138.6585,
+                    "std": 71.368,
                     "min": 24.0,
                     "max": 496.0
                 },
                 "co": {
-                    "mean": 269.4497,
-                    "std": 203.7565,
+                    "mean": 269.3726,
+                    "std": 203.7229,
                     "min": 86.01,
                     "max": 1662.73
                 },
                 "no": {
-                    "mean": 0.057,
+                    "mean": 0.0569,
                     "std": 0.1126,
                     "min": 0.0,
                     "max": 1.11
                 },
                 "no2": {
-                    "mean": 1.5247,
-                    "std": 1.1158,
+                    "mean": 1.5251,
+                    "std": 1.1159,
                     "min": 0.14,
                     "max": 15.6
                 },
                 "o3": {
-                    "mean": 85.0503,
-                    "std": 28.2076,
+                    "mean": 85.0591,
+                    "std": 28.2032,
                     "min": 22.71,
                     "max": 168.41
                 },
                 "so2": {
-                    "mean": 2.7733,
-                    "std": 2.1998,
+                    "mean": 2.777,
+                    "std": 2.2046,
                     "min": 0.08,
                     "max": 18.51
                 },
                 "pm2_5": {
-                    "mean": 65.585,
-                    "std": 59.4625,
+                    "mean": 65.559,
+                    "std": 59.455,
                     "min": 0.0,
                     "max": 494.82
                 },
                 "pm10": {
-                    "mean": 184.5011,
-                    "std": 108.0422,
+                    "mean": 184.4172,
+                    "std": 108.0669,
                     "min": 0.0,
                     "max": 725.35
                 },
@@ -845,63 +845,63 @@
                     "max": 30.18
                 },
                 "temperature_2m": {
-                    "mean": 26.9488,
-                    "std": 9.083,
+                    "mean": 26.9542,
+                    "std": 9.0832,
                     "min": 3.4,
                     "max": 46.7
                 },
                 "relative_humidity_2m": {
-                    "mean": 52.5631,
-                    "std": 19.7661,
+                    "mean": 52.5529,
+                    "std": 19.7658,
                     "min": 6.0,
                     "max": 100.0
                 },
                 "wind_speed_10m": {
-                    "mean": 8.5367,
-                    "std": 4.6494,
+                    "mean": 8.5393,
+                    "std": 4.6493,
                     "min": 0.0,
                     "max": 27.8
                 },
                 "hour": {
-                    "mean": 11.5037,
-                    "std": 6.9248,
+                    "mean": 11.5005,
+                    "std": 6.9241,
                     "min": 0.0,
                     "max": 23.0
                 },
                 "day_of_week": {
-                    "mean": 3.007,
-                    "std": 1.9946,
+                    "mean": 3.0075,
+                    "std": 1.9942,
                     "min": 0.0,
                     "max": 6.0
                 },
                 "month": {
-                    "mean": 6.6661,
-                    "std": 3.4263,
+                    "mean": 6.6674,
+                    "std": 3.4257,
                     "min": 1.0,
                     "max": 12.0
                 },
                 "aqi_change_rate": {
-                    "mean": -0.0048,
-                    "std": 9.7581,
+                    "mean": -0.006,
+                    "std": 9.7554,
                     "min": -184.0,
                     "max": 177.0
                 },
                 "aqi_rolling_24h": {
-                    "mean": 138.7637,
-                    "std": 68.1816,
+                    "mean": 138.7252,
+                    "std": 68.1805,
                     "min": 32.3333,
                     "max": 474.25
                 }
             },
             "missing_values": {
-                "nh3": 172,
+                "nh3": 177,
                 "target_aqi_next_1d": 35,
                 "target_aqi_next_2d": 83,
                 "target_aqi_next_3d": 131
             },
             "aqi_distribution": {
                 "Good (0-50)": 58,
-                "Moderate (51-100)": 2955,
+                "Moderate (51-100)": 2960,
                 "Unhealthy for Sensitive (101-150)": 2357,
                 "Unhealthy (151-200)": 2398,
                 "Very Unhealthy (201-300)": 476,
@@ -911,7 +911,7 @@
         "pipeline_info": {
             "feature_group": "aqi_features",
             "feature_group_version": 3,
-            "scaler_version": 28,
+            "scaler_version": 29,
             "data_source": {
                 "pollution": "OpenWeather Air Pollution API",
                 "weather": "Open-Meteo Archive + Forecast API"
