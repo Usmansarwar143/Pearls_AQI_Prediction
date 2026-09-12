@@ -1,7 +1,7 @@
 {
     "status": "success",
-    "generated_at": "2026-09-12T16:48:05.351078+00:00",
-    "generation_time_seconds": 151.0,
+    "generated_at": "2026-09-12T18:59:55.330254+00:00",
+    "generation_time_seconds": 132.89,
     "data": {
         "current_aqi": 75.0,
         "current_date": "2026-09-05T23:00:00.000000",
