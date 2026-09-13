@@ -17,14 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return { icon: '💜', title: 'Hazardous — Stay indoors', text: 'Health alert: The risk of health effects is increased for everyone. Avoid all outdoor physical activities. Keep windows closed.' };
     }
 
-    function formatDate(dateString) {
+    function formatDate(dateInput) {
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
-        // Ensure timezone-naive strings are treated as UTC to avoid inconsistent parsing
-        let normalizedDate = dateString;
-        if (!dateString.endsWith('Z') && !dateString.includes('+') && !/\d{2}:\d{2}$/.test(dateString.slice(-6))) {
-            normalizedDate = dateString + 'Z';
+        if (typeof dateInput === 'string') {
+            // Ensure timezone-naive strings are treated as UTC to avoid inconsistent parsing
+            if (!dateInput.endsWith('Z') && !dateInput.includes('+') && !/\d{2}:\d{2}$/.test(dateInput.slice(-6))) {
+                dateInput = dateInput + 'Z';
+            }
         }
-        return new Date(normalizedDate).toLocaleDateString(undefined, options);
+        return new Date(dateInput).toLocaleDateString(undefined, options);
     }
 
     function formatFeatureName(name) {
