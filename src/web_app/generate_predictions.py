@@ -279,24 +279,33 @@ def generate_predictions():
         import requests as req
         from datetime import timedelta
         
-        # 1. Get coordinates for Sadiqabad
-        ow_key = os.getenv("OPENWEATHER_API_KEY", "")
-        geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q=SadiqAbad,PK&limit=1&appid={ow_key}"
-        geo_resp = req.get(geo_url, timeout=10)
-        geo_data = geo_resp.json()
-        lat, lon = geo_data[0]['lat'], geo_data[0]['lon']
+        # Hardcoded coordinates for Sadiqabad, Pakistan
+        # (eliminates dependency on OpenWeather geocoding API which can fail/rate-limit)
+        lat, lon = 28.3091, 70.1327
         
         now_utc = datetime.now(timezone.utc)
         
+        # Helper to fetch with retries
+        def _fetch_with_retry(url, retries=3, timeout=20):
+            for attempt in range(retries):
+                try:
+                    resp = req.get(url, timeout=timeout)
+                    resp.raise_for_status()
+                    return resp.json()
+                except Exception as e:
+                    print(f"  API fetch attempt {attempt+1}/{retries} failed: {e}")
+                    if attempt < retries - 1:
+                        import time
+                        time.sleep(3)
+            raise Exception(f"Failed to fetch {url} after {retries} retries")
+        
         # 2. Fetch recent pollution from Open-Meteo Air Quality API
         aq_url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&past_days=7&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia"
-        aq_resp = req.get(aq_url, timeout=15)
-        aq_data = aq_resp.json()
+        aq_data = _fetch_with_retry(aq_url)
         
         # 3. Fetch recent weather from Open-Meteo Forecast API
         wx_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&past_days=7&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
-        wx_resp = req.get(wx_url, timeout=15)
-        wx_data = wx_resp.json()
+        wx_data = _fetch_with_retry(wx_url)
         
         if 'hourly' in aq_data and 'hourly' in wx_data:
             # Build pollution df
