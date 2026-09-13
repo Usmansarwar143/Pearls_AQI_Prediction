@@ -19,7 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatDate(dateString) {
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
+        // Ensure timezone-naive strings are treated as UTC to avoid inconsistent parsing
+        let normalizedDate = dateString;
+        if (!dateString.endsWith('Z') && !dateString.includes('+') && !/\d{2}:\d{2}$/.test(dateString.slice(-6))) {
+            normalizedDate = dateString + 'Z';
+        }
+        return new Date(normalizedDate).toLocaleDateString(undefined, options);
     }
 
     function formatFeatureName(name) {

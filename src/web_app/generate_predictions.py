@@ -572,7 +572,7 @@ def generate_predictions():
         "data": {
             # Core predictions
             "current_aqi": float(latest_row['aqi'].values[0]),
-            "current_date": str(latest_row['date'].values[0]),
+            "current_date": pd.Timestamp(latest_row['date'].values[0]).tz_localize('UTC').isoformat(),
             "history": short_history_data,
             "extended_history": history_data,
             "predictions": {
